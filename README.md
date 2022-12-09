@@ -113,25 +113,23 @@ hittable_list create_world() {
 ```c++
 class bvh_node : public hittable {
     	public:
+		// 생성자
 		bvh_node();
-
 		bvh_node(const hittable_list& list, double time0, double time1)
-	    		: bvh_node(list.objects, 0, list.objects.size(), time0, time1)
-			{}
-
+			: bvh_node(list.objects, 0, list.objects.size(), time0, time1) {}
 		bvh_node(
-		    		const std::vector<shared_ptr<hittable>>& src_objects,
-		    		size_t start, size_t end, double time0, double time1);
-
-		virtual bool hit(
-		    		const ray& r, double t_min, double t_max, hit_record& rec) const override;
-
+			const std::vector<shared_ptr<hittable>>& src_objects,
+		    	size_t start, size_t end, double time0, double time1);
+			
+		// BVH 노드와의 충돌 여부를 확인하는 함수
+		virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override;
+		// BVH 노드의 AABB를 생성하는 함수
 		virtual bool bounding_box(double time0, double time1, aabb& output_box) const override;
 
     	public:
-		shared_ptr<hittable> left;
-		shared_ptr<hittable> right;
-		aabb box;
+		shared_ptr<hittable> left;  // (현재 노드의) 왼쪽 자식 노드
+		shared_ptr<hittable> right; // 오른쪽 자식 노드
+		aabb box;  // 노드를 감싸는 Axis-aligned bounding box (AABB)
 };
 ```
 
@@ -148,6 +146,92 @@ hittable_list create_world() {
 }
 ```
 
+## 2. 이미지의 해상도를 결정하고 카메라 생성하기
+> 렌더링할 이미지의 해상도(가로, 세로 픽셀 개수)와 가상의 카메라를 생성해서 3차원 공간에 위치시킨다.
+> 1. 이미지의 해상도를 결정한다.
+> 2. 카메라의 클래스를 정의한다.
+> 3. 카메라 객체를 생성한다.
+
+1. 이미지의 해상도를 결정한다.
+```c++
+int main() 
+{
+	...
+	// 이미지 설정
+	auto aspect_ratio = 16.0 / 9.0;  // 이미지 배율
+    	int image_width = 400;  // 가로 길이
+	int image_height = static_cast<int>(image_width / aspect_ratio); // 세로 길이
+   	int samples_per_pixel = 100;  // 픽셀 당 쏠 레이의 개수 (샘플 개수)   
+	...
+}
+```
+
+2. 카메라의 클래스를 정의한다.
+```c++
+class camera {
+	public:
+		// 생성자
+	public:
+		camera(
+			point3 lookfrom,
+			point3 lookat,
+			vec3   vup,	
+			double vfov, // vertical field-of-view in degrees
+			double aspect_ratio,
+			double aperture,
+			double focus_dist,
+			double _time0 = 0,
+			double _time1 = 0
+
+		      ) {
+			auto theta = degrees_to_radians(vfov);
+			auto h = tan(theta/2);
+			auto viewport_height = 2.0 * h;
+			auto viewport_width = aspect_ratio * viewport_height;		
+
+			auto w = unit_vector(lookfrom - lookat);
+			auto u = unit_vector(cross(vup, w));
+			auto v = cross(w, u);
+
+			origin = lookfrom;
+			horizontal = focus_dist * viewport_width * u;
+			vertical = focus_dist * viewport_height * v;
+			lower_left_corner = origin - horizontal/2 - vertical/2 - focus_dist*w;
+			lens_radius = aperture / 2;
+			time0 = _time0;
+			time1 = _time1;
+		}
+		// (카메라로부터) 레이를 지정한 픽셀로 쏘는 함수
+		ray get_ray(double s, double t) const {
+			vec3 rd = lens_radius * random_in_unit_disk();
+			vec3 offset = u * rd.x() + v * rd.y();
+			// 레이 객체를 생성해서 반환
+			return ray(
+				origin + offset,  // 레이가 쏘아지는 원점의 위치
+				lower_left_corner + s*horizontal + t*vertical - origin - offset,  // 레이를 쏘는 지점의 위치
+				random_double(time0, time1)  // 레이를 쏠 시간
+			);
+		}
+}
+```
+
+3. 카메라 객체를 생성한다.
+```c++
+int main() 
+{
+	...
+	// 카메라 정보 설정
+	point3 lookfrom(13,2,3);  // 카메라의 위치
+	point3 lookat(0,0,0);  // 카메라가 바라보는 지점의 위치
+	vec3 vup(0,1,0); // 카메라의 머리 방향
+	auto dist_to_focus = 10.0;  // 카메라의 초점거리
+	auto aperture = 0.1;  // 카메라의 조리개값
+
+	// 카메라 객체 생성
+	camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
+	...
+}
+```
   ### Adjustable Variables
   * `image_width`: width of the output image
   * `samples_per_pixel`: the number of samples to produce one pixel value
