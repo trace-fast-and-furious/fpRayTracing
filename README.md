@@ -2,24 +2,24 @@
 Floating-point(FP) 연산을 사용하는 기존의 레이 트레이서 코드이다.
 
 ## 코드 실행 관련 설명
-> ### 사용자가 조정 가능한 변수들
->> #### 이미지 관련 변수들
->> * `image_width`: 결과 이미지의 가로 길이
->> * `aspect_ratio`: 결과 이미지의 종횡비(가로, 세로 비율)
->> * `samples_per_pixel`: 픽셀 당 쏠 레이의 개수 (값을 높일수록 이미지의 계단효과를 줄이고 정확도를 높일 수 있음)
->> * `max_depth`: 레이를 추적할 횟수 (값을 낮출수록 이미지의 밝기가 어두워짐)
-
->> #### 카메라 관련 변수들
->> * point3 lookfrom(13,2,3): 카메라의 원점(위치)
->> * point3 lookat(0,0,0): 카메라가 바라보는 지점의 위치
->> * vec3 vup(0,1,0): 카메라의 머리가 가리키는 방향
->> * auto dist_to_focus = 10.0: 카메라의 초점거리 (초점이 맞는 거리를 결정함)
->> * auto aperture = 0.1: 카메라의 조리개값 (높일수록 더 오랜 시간동안 촬영을 함)
+### 사용자가 조정 가능한 변수들
+> #### 이미지 관련 변수들
+> * `image_width`: 결과 이미지의 가로 길이
+> * `aspect_ratio`: 결과 이미지의 종횡비(가로, 세로 비율)
+> * `samples_per_pixel`: 픽셀 당 쏠 레이의 개수 (값을 높일수록 이미지의 계단효과를 줄이고 정확도를 높일 수 있음)
+> * `max_depth`: 레이를 추적할 횟수 (값을 낮출수록 이미지의 밝기가 어두워짐)
+>
+> #### 카메라 관련 변수들
+> * point3 lookfrom(13,2,3): 카메라의 원점(위치)
+> * point3 lookat(0,0,0): 카메라가 바라보는 지점의 위치
+> * vec3 vup(0,1,0): 카메라의 머리가 가리키는 방향
+> * auto dist_to_focus = 10.0: 카메라의 초점거리 (초점이 맞는 거리를 결정함)
+> * auto aperture = 0.1: 카메라의 조리개값 (높일수록 더 오랜 시간동안 촬영을 함)
   
-> ### 코드 실행 방법
->> * 컴파일: `$ make` or `nvcc -g -G --expt-relaxed-constexpr -o RTTNW.out main.cu`
->> * 실행: `$ ./RTTNW.out`
->> * 디버깅: `$ cuda-gdb ./RTTNW.out`
+### 코드 실행 방법
+> * 컴파일: `$ make` or `nvcc -g -G --expt-relaxed-constexpr -o RTTNW.out main.cu`
+> * 실행: `$ ./RTTNW.out`
+> * 디버깅: `$ cuda-gdb ./RTTNW.out`
 
 # fpRayTracing 코드 설명
 레이 트레이서는 아래와 같이 크게 3가지 단계로 구현된다.
