@@ -298,15 +298,3 @@ int main()
 	...
 }
 ```
-
-  ### Adjustable Variables
-  * `image_width`: width of the output image
-  * `samples_per_pixel`: the number of samples to produce one pixel value
-  * `max_depth`: the maximum number of child rays that can be generated per pixel
-  * `nodesNum`: the maximum number of nodes in BVH (determines the size of stack array(`d_nodes`) and bvh array(`d_bvh`))
-   
-  ### How to Run the Code
-  * Compile: `$ make` or `nvcc -g -G --expt-relaxed-constexpr -o RTTNW.out main.cu`
-  * Execute: `$ ./RTTNW.out`
-  * Debug: `$ cuda-gdb ./RTTNW.out`
-    
