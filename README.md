@@ -23,6 +23,7 @@ Floating-point(FP) 연산을 사용하는 기존의 레이 트레이서 코드�
 >> 2. 실행: `$ ./RTTNW.out` 명령어 입력
 >> * 디버깅: `$ cuda-gdb ./RTTNW.out` 명령어 입력
 
+***
 # fpRayTracing 코드 설명
 레이 트레이서는 아래와 같이 크게 3가지 단계로 구현된다.
 ## 1. 3차원 월드(world) 생성하기
