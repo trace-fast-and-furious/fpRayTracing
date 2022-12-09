@@ -240,6 +240,7 @@ int main()
 ```c++
 int main()
 {
+	...
 	// 각 픽셀마다
 	for (int j = 0; j < image_height; ++j) {  
 		for (int i = 0; i < image_width; ++i) {
@@ -270,6 +271,7 @@ int main()
 		array[idx+2] = (256 * clamp(b, 0.0, 0.999));
 		}
 	}
+	...
 }
 ```
 
