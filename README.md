@@ -238,35 +238,38 @@ int main()
 
 1. 카메라로부터 각 픽셀마다 레이를 쏘아서 경로를 추적하여 해당 픽셀의 색깔을 결정한다.
 ```c++
-// 각 픽셀마다
-for (int j = 0; j < image_height; ++j) {  
-	for (int i = 0; i < image_width; ++i) {
-        	int idx = (j * image_width + i) * 3;  // 픽셀의 인덱스
-        	color pixel_color(0, 0, 0);  // 픽셀값(RGB)
-	
-		// 픽셀마다 여러 개의 레이(샘플)을 사용하여 매끄러운 이미지를 만듦
-		for (int s = 0; s < samples_per_pixel; ++s) {
-			// 픽셀 영역 내의 랜덤한 위치로 레이를 쏨
-			auto u = (i + random_float()) / (image_width - 1);  
-			auto v = ((image_height-j-1) + random_float()) / (image_height - 1);
+int main()
+{
+	// 각 픽셀마다
+	for (int j = 0; j < image_height; ++j) {  
+		for (int i = 0; i < image_width; ++i) {
+			int idx = (j * image_width + i) * 3;  // 픽셀의 인덱스
+			color pixel_color(0, 0, 0);  // 픽셀값(RGB)
 
-			ray cur_ray = cam.get_ray(u, v);  // 현재 레이
-			pixel_color += ray_color(cur_ray, world, max_depth);  // 레이의 경로를 추적
+			// 픽셀마다 여러 개의 레이(샘플)을 사용하여 매끄러운 이미지를 만듦
+			for (int s = 0; s < samples_per_pixel; ++s) {
+				// 픽셀 영역 내의 랜덤한 위치로 레이를 쏨
+				auto u = (i + random_float()) / (image_width - 1);  
+				auto v = ((image_height-j-1) + random_float()) / (image_height - 1);
 
-			r = pixel_color.x();
-			g = pixel_color.y();
-			b = pixel_color.z();
+				ray cur_ray = cam.get_ray(u, v);  // 현재 레이
+				pixel_color += ray_color(cur_ray, world, max_depth);  // 레이의 경로를 추적
 
-			// 이미지 매끄럽게 만들기 (Antialiasing)
-			float scale = 1.0 / samples_per_pixel;
-			r = sqrt(scale * r);
-			g = sqrt(scale * g);
-			b = sqrt(scale * b);	
-        	}
-	array[idx] = (256 * clamp(r, 0.0, 0.999));
-	array[idx+1] = (256 * clamp(g, 0.0, 0.999));
-	array[idx+2] = (256 * clamp(b, 0.0, 0.999));
-   	}
+				r = pixel_color.x();
+				g = pixel_color.y();
+				b = pixel_color.z();
+
+				// 이미지 매끄럽게 만들기 (Antialiasing)
+				float scale = 1.0 / samples_per_pixel;
+				r = sqrt(scale * r);
+				g = sqrt(scale * g);
+				b = sqrt(scale * b);	
+			}
+		array[idx] = (256 * clamp(r, 0.0, 0.999));
+		array[idx+1] = (256 * clamp(g, 0.0, 0.999));
+		array[idx+2] = (256 * clamp(b, 0.0, 0.999));
+		}
+	}
 }
 ```
 
