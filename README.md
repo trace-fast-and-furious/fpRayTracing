@@ -8,7 +8,7 @@ Floating-point(FP) 연산을 사용하는 기존의 레이 트레이서 코드�
 > 2. 구 리스트를 생성한다. 
 > 3. 다양한 구 객체들을 생성하여 구 리스트(=3차원 공간)에 추가한다.
 
-> 1. 구(sphere) 클래스를 정의한다.
+1. 구(sphere) 클래스를 정의한다.
 ```c++
 class sphere : public hittable {
 public:
@@ -29,7 +29,7 @@ public:
 };
 ```
 
-> 2. 구 리스트를 생성한다. 
+2. 구 리스트를 생성한다. 
 ```c++
 int main() {
 	hittable_list world = create_world();  
@@ -37,7 +37,7 @@ int main() {
 }
 ```
 
-> 3. 다양한 구 객체들을 생성하여 구 리스트(=3차원 공간)에 추가한다.
+3. 다양한 구 객체들을 생성하여 구 리스트(=3차원 공간)에 추가한다.
 ```c++
 hittable_list create_world() {
 	hittable_list world;  // 월드(구 리스트)
