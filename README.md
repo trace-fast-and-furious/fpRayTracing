@@ -19,9 +19,9 @@ Floating-point(FP) 연산을 사용하는 기존의 레이 트레이서 코드�
 ### 코드 실행 방법
 > * CPU: 아래 과정을 거치지 않고 바로 실행하면 된다.
 > * GPU: nvcc 컴파일러를 이용해야 한다.
-> *1. 컴파일: `$ make` or `nvcc -g -G --expt-relaxed-constexpr -o RTTNW.out main.cu`
-> *2. 실행: `$ ./RTTNW.out`
-> *3. 디버깅: `$ cuda-gdb ./RTTNW.out`
+> * 1. 컴파일: `$ make` or `nvcc -g -G --expt-relaxed-constexpr -o RTTNW.out main.cu`
+> * 2. 실행: `$ ./RTTNW.out`
+> * 3. 디버깅: `$ cuda-gdb ./RTTNW.out`
 
 # fpRayTracing 코드 설명
 레이 트레이서는 아래와 같이 크게 3가지 단계로 구현된다.
