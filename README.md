@@ -7,8 +7,38 @@ Floating-point(FP) 연산을 사용하는 기존의 레이 트레이서 코드�
 > 1. 구(sphere) 클래스를 정의한다.
 > 2. 구 리스트를 생성한다. 
 > 3. 다양한 구 객체들을 생성하여 구 리스트(=3차원 공간)에 추가한다.
+
+> 1. 구(sphere) 클래스를 정의한다.
 ```c++
-// 3차원 공간(구 리스트)를 생성하는 함수
+class sphere : public hittable {
+public:
+	// 생성자
+    	sphere() {}
+        sphere(point3 cen, double r, shared_ptr<material> m)
+            : center(cen), radius(r), mat_ptr(m) {};
+	   
+    	// 구와의 충돌 여부 확인하는 함수
+    	virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override;
+	// 구의 AABB를 구하는 함수
+	virtual bool bounding_box(double time0, double time1, aabb& output_box) const override;
+
+public:
+    	point3 center;  // 구의 중심
+    	double radius;  // 반지름
+        shared_ptr<material> mat_ptr;  // 재질
+};
+```
+
+> 2. 구 리스트를 생성한다. 
+```c++
+int main() {
+	hittable_list world = create_world();  
+	...
+}
+```
+
+> 3. 다양한 구 객체들을 생성하여 구 리스트(=3차원 공간)에 추가한다.
+```c++
 hittable_list create_world() {
 	hittable_list world;  // 월드(구 리스트)
    	int n = 10;  // 오브젝트 개수 결정 인자	
