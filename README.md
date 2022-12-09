@@ -17,7 +17,7 @@ Floating-point(FP) 연산을 사용하는 기존의 레이 트레이서 코드�
 > * auto aperture = 0.1: 카메라의 조리개값 (높일수록 더 오랜 시간동안 촬영을 함)
   
 ### 코드 실행 방법
-> * CPU: 아래 과정을 거치지 않고 바로 실행하면 된다 (단, CUDA 문법을 사용하는 라인이 일부 있기 때문에 현재 코드는 CPU에서 실행할 수 없다).
+> * CPU: 아래 과정을 거치지 않고 바로 실행하면 된다 * <span style="color:red"> (단, CUDA 문법을 사용하는 라인이 일부 있기 때문에 현재 코드는 CPU에서 실행할 수 없다). </span> *
 > * GPU: nvcc 컴파일러를 이용해야 한다.
 >> 1. 컴파일: `$ make`(Makefile을 이용하는 경우) 또는 `nvcc -g -G --expt-relaxed-constexpr -o RTTNW.out main.cu` 명령어 입력
 >> 2. 실행: `$ ./RTTNW.out` 명령어 입력
