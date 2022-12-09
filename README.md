@@ -103,7 +103,51 @@ hittable_list create_world() {
 	return world_bvh;
 }
 ```
- 
+
+## 1.2. Bounding Volume Hierarchy (BVH) 생성하기
+> 레이 트레이싱의 연산(레이가 물체와 충돌하는지 여부를 확인하는 연산) 개수를 줄이기 위해 사용하는 트리형 가속(acceleration) 자료구조인 BVH를 생성한다.
+> 1. BVH 트리를 구성하는 노드의 클래스를 정의한다.
+> 2. 물체 리스트를 이용하여 BVH 트리를 생성한다.
+
+1. BVH 트리의 노드 클래스를 정의한다.
+```c++
+class bvh_node : public hittable {
+    	public:
+		bvh_node();
+
+		bvh_node(const hittable_list& list, double time0, double time1)
+	    		: bvh_node(list.objects, 0, list.objects.size(), time0, time1)
+			{}
+
+		bvh_node(
+		    		const std::vector<shared_ptr<hittable>>& src_objects,
+		    		size_t start, size_t end, double time0, double time1);
+
+		virtual bool hit(
+		    		const ray& r, double t_min, double t_max, hit_record& rec) const override;
+
+		virtual bool bounding_box(double time0, double time1, aabb& output_box) const override;
+
+    	public:
+		shared_ptr<hittable> left;
+		shared_ptr<hittable> right;
+		aabb box;
+};
+```
+
+2. 물체 리스트를 이용하여 BVH 트리를 생성한다.
+```c++
+hittable_list create_world() {
+	...
+	
+	// BVH Construction
+	hittable_list world_bvh;
+	world_bvh.add(make_shared<bvh_node>(world, 0, 1));
+
+	return world_bvh;
+}
+```
+
   ### Adjustable Variables
   * `image_width`: width of the output image
   * `samples_per_pixel`: the number of samples to produce one pixel value
