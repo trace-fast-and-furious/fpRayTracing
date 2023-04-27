@@ -224,11 +224,12 @@ int main()
 	int timeStamp = (((tPtr->tm_year) + 1900) % 100) * 10000 + ((tPtr->tm_mon) + 1) * 100 + (tPtr->tm_mday);
 
 	// creating directory
-	string directory = "../images/" + string(typeid(__fpo).name()) + "_" + to_string(FP_EXP_BITSIZE) + "_" + to_string(FP_MANT_BITSIZE);
+	string fp_size = to_string(FP_EXP_BITSIZE) + "_" + to_string(FP_MANT_BITSIZE);
+	string directory = "../images/emulator/" + string(typeid(__fpo).name()) + "/";
 	if (mkdir(directory.c_str(), 0777) == -1)
 		cerr << "Error :  " << strerror(errno) << endl;
 
-	string img_path = directory + "/" + to_string(timeStamp) + "_" + to_string(image_width) + "_" + to_string(samples_per_pixel) + "_" + to_string(max_depth) + "_fp_img.ppm";
+	string img_path = directory + "/" + to_string(timeStamp) + "_" + fp_size + "_" + to_string(image_width) + "_" + to_string(samples_per_pixel) + "_" + to_string(max_depth) + "img.ppm";
 	ppmSave(img_path.c_str(), image_array, image_width, image_height);
 
 	return 0;
