@@ -69,7 +69,7 @@ color ray_color(const ray &r, const hittable &world, int depth)
 	if (depth <= 0)
 		return color(0, 0, 0);
 
-	if (world.hit(r, b_0_1, b_infinity, rec)) // hit: 충돌지점을 결정(child ray 의 origin)
+	if (world.hit(r, b_0_2, b_infinity, rec)) // hit: 충돌지점을 결정(child ray 의 origin)
 	{										  // if ray hits object
 		ray scattered;
 		color attenuation;
@@ -113,7 +113,7 @@ int main()
 	auto aspect_ratio = 16.0 / 9.0;
 	int image_width = 400; // 400
 	int image_height = static_cast<int>(image_width / aspect_ratio);
-	int samples_per_pixel = 1;
+	int samples_per_pixel = 10;
 	const int max_depth = 50;
 	float scale = 1.0 / samples_per_pixel;
 

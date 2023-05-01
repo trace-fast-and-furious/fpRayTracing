@@ -21,9 +21,9 @@
 #define NO_RANDOM 0
 
 /* set bit configuration */
-#define FP_MANT_BITSIZE 23
-#define FP_SIGNIFICAND_BITSIZE 24
-#define FP_EXP_BITSIZE 8
+#define FP_MANT_BITSIZE 10
+#define FP_SIGNIFICAND_BITSIZE 11
+#define FP_EXP_BITSIZE 5
 #define FP_BIAS (unsigned int)(std::pow(2, FP_EXP_BITSIZE - 1) - 1)
 
 typedef struct

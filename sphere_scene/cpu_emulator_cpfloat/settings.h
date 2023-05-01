@@ -19,6 +19,7 @@ using std::string;
 using std::to_string;
 
 #define DEBUG 0
+#define DATE 0
 
 /* set data structures and names */
 typedef double fp_orig;
@@ -34,7 +35,7 @@ struct e_custom
 };
 
 /* precision settings */
-#define CP_EXP_BITSIZE 7
-#define CP_MANT_BITSIZE 14
+#define CP_EXP_BITSIZE 6
+#define CP_MANT_BITSIZE 4
 
 optstruct *fpopts = init_optstruct();

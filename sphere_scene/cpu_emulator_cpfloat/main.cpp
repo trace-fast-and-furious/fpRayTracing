@@ -86,7 +86,6 @@ color ray_color(const ray &r, const hittable &world, int depth)
 // 3. main
 int main()
 {
-	std::cout << "hello" << std::endl;
 
 	// Allocate the data structure for target formats and rounding parameters.
 	fpopts = init_optstruct();
@@ -120,7 +119,7 @@ int main()
 	auto aspect_ratio = 16.0 / 9.0;
 	int image_width = 400; // 400
 	int image_height = static_cast<int>(image_width / aspect_ratio);
-	int samples_per_pixel = 1;
+	int samples_per_pixel = 1000;
 	const int max_depth = 50;
 	float scale = 1.0 / samples_per_pixel;
 
@@ -224,11 +223,14 @@ int main()
 
 	// creating directory
 	string cp_size = to_string(CP_EXP_BITSIZE) + "_" + to_string(CP_MANT_BITSIZE);
-	string directory = "../images/emulator_cpfloat/" + string(typeid(fp_orig).name()) + "/";
+	string directory = "../images/emulator_cpfloat/" + string(typeid(fp_orig).name());
+	if (DATE)
+		directory += "_" + to_string(timeStamp);
 	if (mkdir(directory.c_str(), 0777) == -1)
-		std::cerr << "Error :  " << strerror(errno) << endl;
+		std::cerr
+			<< "Error :  " << strerror(errno) << endl;
 
-	string img_path = directory + "/" + to_string(timeStamp) + "_" + cp_size + "_" + to_string(image_width) + "_" + to_string(samples_per_pixel) + "_" + to_string(max_depth) + "_img.ppm";
+	string img_path = directory + "_" + cp_size + "_" + to_string(image_width) + "_" + to_string(samples_per_pixel) + "_" + to_string(max_depth) + "_img.ppm";
 	ppmSave(img_path.c_str(), image_array, image_width, image_height);
 
 	return 0;
