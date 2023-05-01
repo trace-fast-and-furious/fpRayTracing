@@ -36,6 +36,6 @@ struct e_custom
 
 /* precision settings */
 #define CP_EXP_BITSIZE 6
-#define CP_MANT_BITSIZE 4
+#define CP_MANT_BITSIZE 10
 
 optstruct *fpopts = init_optstruct();
