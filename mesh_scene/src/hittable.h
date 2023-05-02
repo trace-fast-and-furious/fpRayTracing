@@ -11,10 +11,12 @@
 
 // Preprocessors
 #pragma once
+#ifndef HITTABLE_H
+#define HITTABLE_H
 
-#include "ray.h"
-#include "utility.h"
+#include "camera.h"
 
+using namespace custom_precision_fp;
 
 class Material;
 
@@ -24,7 +26,7 @@ struct HitRecord
 	Point3 p;
 	Vec3 normal;
 	shared_ptr<Material> mat_ptr;
-	double t;
+	fp_custom t;
 	bool is_front_face;
 
 	inline void set_face_normal(const Ray& r, const Vec3& outward_normal) {
@@ -37,5 +39,8 @@ struct HitRecord
 class Hittable 
 {
 	public:
-		virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const = 0;
+		virtual bool hit(const Ray &r, fp_orig __t_min, fp_orig __t_max, HitRecord &rec) const = 0;
+		virtual bool hit(const Ray &r, fp_custom t_min, fp_custom t_max, HitRecord &rec) const = 0;
 };
+
+#endif
