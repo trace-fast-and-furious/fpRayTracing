@@ -1,5 +1,5 @@
-#ifndef MATERIAL_BFP_H
-#define MATERIAL_BFP_H
+#ifndef MATERIAL_H
+#define MATERIAL_H
 
 #include "moving_sphere.h"
 
@@ -86,12 +86,9 @@ public:
     {
         attenuation = color(1, 1, 1);
         fp_custom refraction_ratio = rec.front_face ? (1 / ir) : ir;
-
         vec3 unit_direction = unit_vector(r_in.direction());
-
         fp_custom cos_theta = min(dot(-unit_direction, rec.normal), 1);
         fp_custom sin_theta = sqrt(1 - cos_theta * cos_theta);
-
         bool cannot_refract = refraction_ratio * sin_theta > 1;
         vec3 direction;
 
@@ -146,7 +143,7 @@ private:
     static fp_orig reflectance(fp_orig cosine, fp_orig ref_idx)
     {
         // Use Schlick's approximation for reflectance.
-        auto r0 = (1 - ref_idx) / (1 + ref_idx);
+        fp_orig r0 = (1 - ref_idx) / (1 + ref_idx);
         r0 = r0 * r0;
         return r0 + (1 - r0) * pow((1 - cosine), 5);
     }

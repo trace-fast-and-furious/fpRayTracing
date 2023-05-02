@@ -1,5 +1,5 @@
-#ifndef HITTABLE_BFP_H
-#define HITTABLE_BFP_H
+#ifndef HITTABLE_H
+#define HITTABLE_H
 #include <memory>
 
 #include "aabb.h"

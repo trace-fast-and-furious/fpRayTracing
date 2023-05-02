@@ -1,5 +1,5 @@
-#ifndef CAMERA_BFP_H
-#define CAMERA_BFP_H
+#ifndef CAMERA_H
+#define CAMERA_H
 
 #include "ray.h"
 
