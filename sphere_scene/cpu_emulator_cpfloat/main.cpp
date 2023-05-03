@@ -223,7 +223,7 @@ int main()
 
 	// creating directory
 	string cp_size = to_string(CP_EXP_BITSIZE) + "_" + to_string(CP_MANT_BITSIZE);
-	string directory = "../images/emulator_cpfloat/" + cp_size + "/" + string(typeid(fp_orig).name());
+	string directory = "../images/emulator_cpfloat/1000_50/" + string(typeid(fp_orig).name());
 	if (DATE)
 		directory += "_" + to_string(timeStamp);
 	if (mkdir(directory.c_str(), 0777) == -1)
