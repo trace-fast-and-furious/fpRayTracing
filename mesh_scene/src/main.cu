@@ -58,10 +58,11 @@ int main(void)
     //	loadObjFile("../obj/pyramid.obj", mesh_pyramid);
     //    mesh_pyramid.setMaterial(dielectric);
 
-    loadObjFile("../obj/dino.obj", mesh_dino);
-    mesh_dino.setMaterial(metal);
-    mesh_dino.setMaterial(dielectric);
-    printMesh(img_name, mesh_dino);
+    // loadObjFile("../obj/dino.obj", mesh_dino);
+    //auto metal_white = make_shared<Metal>(Color(1.0, 1.0, 1.0), 0.2);
+    //mesh_dino.setMaterial(metal_white);
+    //mesh_dino.setMaterial(dielectric);
+    //printMesh(img_name, mesh_dino);
 
     //    loadObjFile("../obj/cow.obj", mesh_cow);
     //    mesh_cow.setMaterial(metal);
@@ -78,7 +79,7 @@ int main(void)
 
     // Image
     auto aspect_ratio = 16.0 / 9.0;
-    int image_width = 400;
+    int image_width = 100;
     int image_height = static_cast<int>(image_width / aspect_ratio);
     int samples_per_pixel = 1;
     const int max_depth = 50;
@@ -94,23 +95,30 @@ int main(void)
     //	Point3 lookat(0, 0, 0);
 
     // dino
-    Point3 lookfrom(-50, -50, -50);
-    Point3 lookat(0, 5, 0);
+
+    // dino bottom
+    // Point3 lookfrom(-100, -100, -100);
+    // Point3 lookat(0, 5.5, 0);
+
+    // dino front
+    // Point3 lookfrom(-200, 0, 0);
+    // Point3 lookat(0, 10, 0);
 
     // bunny1
-    //	Point3 lookfrom(0,-1,-3);
-    //    Point3 lookat(0,0.65,0);
+    Point3 lookfrom(0,-1,-3);
+    Point3 lookat(0,0.65,0);
 
-    // // bunny2
-    // Point3 lookfrom(-3, 2, 3);
-    // Point3 lookat(0, 0.65, 0);
+    // bunny2
+    //  Point3 lookfrom(-3, 2, 3);
+    //  Point3 lookat(0, 0.65, 0);
 
     Vec3 vup(0, 1, 0);
     double dist_to_focus = 10.0;
     double aperture = 0.1;
-    //    Camera cam(lookfrom, lookat, vup, 10, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
-    Camera cam(lookfrom, lookat, vup, 16, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0); // dino
-    // Camera cam(lookfrom, lookat, vup, 10, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0); // cow
+    
+    Camera cam(lookfrom, lookat, vup, 10, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
+    //Camera cam(lookfrom, lookat, vup, 16, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0); // dino
+    Camera cam(lookfrom, lookat, vup, 10, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0); // cow
 
     // Rendered Image Array
     out_image = (unsigned char *)malloc(sizeof(unsigned char) * image_width * image_height * 3);
@@ -120,10 +128,10 @@ int main(void)
 
     // Render an image
     //    render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh_pyramid);
-       render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh_dino);
+    //    render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh_dino);
     //    render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh_torus);
     //    render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh_cow);
-    // render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh_bunny);
+    render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh_bunny);
 
     ckCpu->clockPause();
     ckCpu->clockPrint();
@@ -207,8 +215,8 @@ Color computeRayColor(const Ray &ray, Mesh &mesh, int depth)
         // If the ray hits no object: Background
         Vec3 unit_direction = unit_vector(ray.direction());
         fp_custom t = 0.5 * (unit_direction.y() + 1.0);
+        //fp_custom t = fp_orig_to_custom(1.5);
 
-        return Color(0.5, 0.5, 0.5);
-        // return (1.0 - t) * Color(1.0, 1.0, 1.0) + t * Color(0, 0, 0);
+        return (1.0 - t) * Color(0.3, 0.3, 0.3) + t * Color(0, 0, 0);
     }
 }

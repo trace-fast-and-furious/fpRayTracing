@@ -111,33 +111,35 @@ void printMesh(string filename, Mesh &mesh)
     vector<Vertex> m_vertices = mesh.getVertices();
     vector<Face> m_faces = mesh.getFaces();
 
-    cout << "======================================"
-         << "Printing Mesh Information " << filename << "======================================" << endl;
+    // cout << "======================================"
+        //  << "Printing Mesh Information " << filename << "======================================" << endl;
 
+  
     // Vertices
-    cout << "<Vertex Positions>" << endl;
+    // cout << "<Vertex Positions>" << endl;
     for (int v = 0; v < num_v; v++)
     {
         Vertex cur_v = m_vertices[v];
-        cout << v + 1 << ": v " << cur_v.position << endl;
+        // cout << v + 1 << ": v " << cur_v.position << endl;
     }
-    cout << endl;
+    // cout << endl;
 
-    cout << "<Vertex Normals>" << endl;
+    // cout << "<Vertex Normals>" << endl;
+   
     // Normals
     for (int v = 0; v < num_v; v++)
     {
         Vertex cur_v = m_vertices[v];
-        cout << v + 1 << ": v " << cur_v.normal << endl;
+        // cout << v + 1 << ": v " << cur_v.normal << endl;
     }
-    cout << endl;
+    // cout << endl;
 
-    cout << "<Faces>" << endl;
+    // cout << "<Faces>" << endl;
     for (int f = 0; f < num_f; f++)
     {
         Face cur_f = m_faces[f];
         //    cout << "Face " << f << ": V " << cur_f.vertices[0]+1 << " " << cur_f.vertices[1]+1 << " " << cur_f.vertices[2]+1 << endl;
-        cout << "Face " << f << endl;
+        // cout << "Face " << f << endl;
         for (int v = 0; v < cur_f.vertices.size(); v++)
         {
 
@@ -145,12 +147,12 @@ void printMesh(string filename, Mesh &mesh)
             // Vec3 cur_n = m_vertices[cur_f.vertices[v]].normal;
             Vec3 cur_v = mesh.getVertexPos(f, v);
             Vec3 cur_n = mesh.getVertexNorm(f, v);
-            cout << "Vertex " << v << ": P=(" << cur_v << "), N=(" << cur_n << ")" << endl;
+            // cout << "Vertex " << v << ": P=(" << cur_v << "), N=(" << cur_n << ")" << endl;
         }
-        cout << endl;
+        // cout << endl;
     }
-    cout << "=================================================================================================" << endl
-         << endl;
+    // cout << "=================================================================================================" << endl
+        //  << endl;
 }
 
 //////////수정해라///////////
@@ -317,7 +319,7 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
         line_type = line.substr(0, pos);                 // substring before space
         line_rest = line.substr(pos + 1, line.length()); // substring after space
 
-        cout << line_type << " ";
+        // cout << line_type << " ";
 
         // 1) Vertex line
         if (line_type == "v") // v x y z
@@ -331,7 +333,7 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
                 e[i] = stof(line_rest.substr(cur_pos, len));
                 cur_pos = pos + 1; // Move on to the next element
 
-                cout << e[i] << " "; // debugging
+                // cout << e[i] << " "; // debugging
             }
             Vec3 v = Vec3(e[0], e[1], e[2]);
             raw_vertices.push_back(v); // add the current vertex data to the collection
@@ -347,7 +349,7 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
                 e[i] = stof(line_rest.substr(cur_pos, len));
                 cur_pos = pos + 1; // Move on to the next element
 
-                cout << e[i] << " "; // debugging
+                // cout << e[i] << " "; // debugging
             }
             Vec3 v = Vec3(e[0], e[1], e[2]);
             raw_normals.push_back(v); // add the current vertex data to the collection
@@ -376,7 +378,7 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
 
                 if (has_only_vertices)
                 {
-                    cout << v_e[i] << " "; // debugging
+                    // cout << v_e[i] << " "; // debugging
                     continue;
                 }
 
@@ -390,7 +392,7 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
                 n_e[i] = stoi(line_rest.substr(cur_pos, len));
                 cur_pos = pos + 1;
 
-                cout << v_e[i] << "//" << n_e[i] << " "; // debugging
+                // cout << v_e[i] << "//" << n_e[i] << " "; // debugging
             }
 
             v_elements.push_back(v_e[0] - 1);
@@ -411,7 +413,7 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
                         cur_pos = pos + 1;  // Move on to the next element
                     }
         */
-        cout << endl;
+        // cout << endl;
     }
 
     // Close the file
