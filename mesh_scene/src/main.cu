@@ -47,11 +47,11 @@ int main(void)
 
     // Image Name
     //    img_name = "pyramid.ppm";
-    img_name = "dino.ppm";
+    // img_name = "dino.ppm";
     //    img_name = "cow.ppm";
     //    img_name = "cow2.ppm";
     //    img_name = "torus.ppm";
-    // img_name = "bunny.ppm";
+     img_name = "bunny.ppm";
 
     // Load meshes
 
@@ -74,8 +74,9 @@ int main(void)
     //    printMesh("../obj/pyramid.obj", mesh_pyramid);
     //    printMesh("../obj/dino.obj", mesh_dino);
 
-    // loadObjFile("../obj/bunny.obj", mesh_bunny);
-    // mesh_bunny.setMaterial(dielectric2);
+    loadObjFile("../obj/bunny.obj", mesh_bunny);
+    mesh_bunny.setMaterial(metal);
+    //mesh_bunny.setMaterial(dielectric2);
 
     // Image
     auto aspect_ratio = 16.0 / 9.0;
@@ -118,7 +119,7 @@ int main(void)
     
     Camera cam(lookfrom, lookat, vup, 10, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
     //Camera cam(lookfrom, lookat, vup, 16, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0); // dino
-    Camera cam(lookfrom, lookat, vup, 10, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0); // cow
+    // Camera cam(lookfrom, lookat, vup, 10, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0); // cow
 
     // Rendered Image Array
     out_image = (unsigned char *)malloc(sizeof(unsigned char) * image_width * image_height * 3);
