@@ -4,7 +4,7 @@
 #include "mkClockMeasure.h"
 #include "mkPpm.h"
 
-#define CAM_CHECK 1
+#define CAM_CHECK 0
 
 
 using namespace custom_precision_fp;
@@ -61,7 +61,7 @@ int main(void)
     auto aspect_ratio = 1;
 	int image_width = 512;
     int image_height = static_cast<int>(image_width / aspect_ratio);
-	int samples_per_pixel = 1000;    
+	int samples_per_pixel = 100;    
 	int max_depth = 100;
 
     if(CAM_CHECK)
@@ -167,6 +167,8 @@ void render(int image_height, int image_width, int samples_per_pixel, int depth,
         
         for (int i = 0; i < image_width; ++i)
         {
+            cout << "[Rendering] w: " << j << endl; 
+
             int idx = (j * image_width + i) * 3;
             Color pixel_color(0, 0, 0);
 
