@@ -1,3 +1,14 @@
+/*
+ * ===================================================
+ *
+ *       Filename:  main.cu
+ *    Description:  Ray Tracing In One Weekend (RTIOW): ~BVH 
+ *        Created:  2022/07/13
+ *  Last Modified: 2023/05/05
+ * 
+ * ===================================================
+ */
+
 // Preprocessors
 #include "mesh.h"
 #include "mkCuda.h"
