@@ -33,6 +33,8 @@
 
 #define POLYGON 3
 #define DIMENSION 3
+#define NV_IN_FILE false
+
 
 using namespace custom_precision_fp;
 using namespace std;
@@ -84,6 +86,9 @@ public:
     Vec3 getVertexNorm(int face, int v) const;
     Vec3 getPointNorm(int face, fp_custom u, fp_custom v) const;
 
+    // 230504: Calculate normal of each triangle(plane)
+    Vec3 getTriNorm(int face) const;  // 230504: 오브젝트 파일 안에 VN이 제공되지 않는 경우, 삼각형마다 법선 벡터를 직접 구해야 함
+
     bool hit(const Ray &ray, fp_orig __min_t, HitRecord &rec);
 
 private:
@@ -111,34 +116,34 @@ void printMesh(string filename, Mesh &mesh)
     vector<Vertex> m_vertices = mesh.getVertices();
     vector<Face> m_faces = mesh.getFaces();
 
-    // cout << "======================================"
-        //  << "Printing Mesh Information " << filename << "======================================" << endl;
+    cout << "======================================"
+         << "Printing Mesh Information " << filename << "======================================" << endl;
 
   
     // Vertices
-    // cout << "<Vertex Positions>" << endl;
+    cout << "<Vertex Positions>" << endl;
     for (int v = 0; v < num_v; v++)
     {
         Vertex cur_v = m_vertices[v];
-        // cout << v + 1 << ": v " << cur_v.position << endl;
+        cout << v + 1 << ": v " << cur_v.position << endl;
     }
-    // cout << endl;
+    cout << endl;
 
-    // cout << "<Vertex Normals>" << endl;
+    cout << "<Vertex Normals>" << endl;
    
     // Normals
     for (int v = 0; v < num_v; v++)
     {
         Vertex cur_v = m_vertices[v];
-        // cout << v + 1 << ": v " << cur_v.normal << endl;
+        cout << v + 1 << ": v " << cur_v.normal << endl;
     }
-    // cout << endl;
+    cout << endl;
 
     // cout << "<Faces>" << endl;
     for (int f = 0; f < num_f; f++)
     {
         Face cur_f = m_faces[f];
-        //    cout << "Face " << f << ": V " << cur_f.vertices[0]+1 << " " << cur_f.vertices[1]+1 << " " << cur_f.vertices[2]+1 << endl;
+        cout << "Face " << f << ": V " << cur_f.vertices[0]+1 << " " << cur_f.vertices[1]+1 << " " << cur_f.vertices[2]+1 << endl;
         // cout << "Face " << f << endl;
         for (int v = 0; v < cur_f.vertices.size(); v++)
         {
@@ -149,10 +154,10 @@ void printMesh(string filename, Mesh &mesh)
             Vec3 cur_n = mesh.getVertexNorm(f, v);
             // cout << "Vertex " << v << ": P=(" << cur_v << "), N=(" << cur_n << ")" << endl;
         }
-        // cout << endl;
+        cout << endl;
     }
-    // cout << "=================================================================================================" << endl
-        //  << endl;
+    cout << "=================================================================================================" << endl
+         << endl;
 }
 
 //////////수정해라///////////
@@ -265,6 +270,21 @@ Vec3 Mesh::getPointNorm(int face, fp_custom u, fp_custom v) const
     return unit_vector(normal_vector);
 }
 
+// Compute normal vector of an arbitrary point inside the face using interpolation
+Vec3 Mesh::getTriNorm(int face) const
+{
+    const Vec3& v0 = getVertexPos(face, 0);
+    const Vec3& v1 = getVertexPos(face, 1);
+    const Vec3& v2 = getVertexPos(face, 2);
+    
+    Vec3 e1 = v1- v0;  // v0v1
+    Vec3 e2 = v2- v0;  // v0v2
+    Vec3 norm = cross(e1, e2); // this is the triangle's normal
+    norm = unit_vector(norm);
+
+    return norm;
+}
+
 // loadObjFile: Load a mesh (.obj) file
 bool loadObjFile(string filename, Mesh &mesh)
 {
@@ -294,8 +314,8 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
         return false;
     }
 
-    cout << "======================================"
-         << "Opening file " << filename << "======================================" << endl;
+    // cout << "======================================"
+    //      << "Opening file " << filename << "======================================" << endl;
 
     // raw data
     vector<Vec3> raw_vertices;
@@ -527,7 +547,16 @@ bool Mesh::hit(const Ray &ray, fp_orig __min_t, HitRecord &rec)
 
                 bary = getBarycentric(rec.p, v0, v1, v2);
 
-                rec.normal = getPointNorm(f, bary.x(), bary.y()); // normal at the intersection point
+                if(NV_IN_FILE)  
+                { 
+                    rec.normal = getPointNorm(f, bary.x(), bary.y());  // normal at the intersection point
+                }
+                else
+                {
+                    rec.normal = getTriNorm(f);
+                }
+
+                // rec.normal = getPointNorm(f, bary.x(), bary.y()); // normal at the intersection point
                 rec.is_front_face = dot(ray.direction(), rec.normal) < 0;
                 rec.mat_ptr = m_material;
 
@@ -557,7 +586,7 @@ bool testRayTriangleHit(const Ray &ray, fp_custom *t, Vec3 &bary, const Vec3 &v0
     Vec3 pvec = cross(ray.dir, e2);
     fp_custom det = dot(e1, pvec);
 
-    if (det <= 0.0001)
+    if (det <= 0.000001f)
         return false; // If the determinant is near zero, ray // plane
 
     // 2. Do the intersection test using Barycentric coordinates (u, v, w)

@@ -4,6 +4,9 @@
 #include "mkClockMeasure.h"
 #include "mkPpm.h"
 
+#define CAM_CHECK 1
+
+
 using namespace custom_precision_fp;
 
 // Function Prototypes
@@ -12,7 +15,8 @@ void render(int image_height, int image_width, int samples_per_pixel, int depth,
 
 // Global variables
 unsigned char *out_image;
-char *img_name;
+const string MESHNAME = "stanford_bunny";
+
 
 int main(void)
 {
@@ -32,70 +36,56 @@ int main(void)
     mkClockMeasure *ckCpu = new mkClockMeasure(clock_name);
     ckCpu->clockReset();
 
-    // meshes
-    Mesh mesh_pyramid;
-    Mesh mesh_dino;
-    Mesh mesh_torus;
-    Mesh mesh_cow;
-    Mesh mesh_bunny;
+    // mesh
+    Mesh mesh;
 
-    // materials
+    // material
     auto metal = make_shared<Metal>(Color(0.6, 0.6, 0.3), 0.2);
     auto dielectric = make_shared<Dielectric>(0.3);
     auto lambertian = make_shared<Lambertian>(Color(0.8, 0.6, 0.3));
     auto dielectric2 = make_shared<Dielectric>(0.1);
 
-    // Image Name
-    //    img_name = "pyramid.ppm";
-    // img_name = "dino.ppm";
-    //    img_name = "cow.ppm";
-    //    img_name = "cow2.ppm";
-    //    img_name = "torus.ppm";
-     img_name = "bunny.ppm";
+    // filename
+    string img_filename = MESHNAME + ".ppm";  // output image file
+    char p_img_filename[30];
+    strcpy(p_img_filename, img_filename.c_str());
+    string mesh_filename = "../obj/" + MESHNAME + ".obj";  // object file
 
-    // Load meshes
-
-    //	loadObjFile("../obj/pyramid.obj", mesh_pyramid);
-    //    mesh_pyramid.setMaterial(dielectric);
-
-    // loadObjFile("../obj/dino.obj", mesh_dino);
-    //auto metal_white = make_shared<Metal>(Color(1.0, 1.0, 1.0), 0.2);
-    //mesh_dino.setMaterial(metal_white);
-    //mesh_dino.setMaterial(dielectric);
-    //printMesh(img_name, mesh_dino);
-
-    //    loadObjFile("../obj/cow.obj", mesh_cow);
-    //    mesh_cow.setMaterial(metal);
-
-    //    loadObjFile("../obj/torus.obj", mesh_torus);
-    //    mesh_torus.setMaterial(metal);
-
-    // Check if meshes are loaded properly
-    //    printMesh("../obj/pyramid.obj", mesh_pyramid);
-    //    printMesh("../obj/dino.obj", mesh_dino);
-
-    loadObjFile("../obj/bunny.obj", mesh_bunny);
-    mesh_bunny.setMaterial(metal);
-    //mesh_bunny.setMaterial(dielectric2);
+    // Load meshes    
+	loadObjFile(mesh_filename, mesh);
+    mesh.setMaterial(lambertian);   
+    // printMesh(mesh_filename, mesh);
 
     // Image
-    auto aspect_ratio = 16.0 / 9.0;
-    int image_width = 100;
+	// auto aspect_ratio = 16.0 / 9.0;
+    auto aspect_ratio = 1;
+	int image_width = 512;
     int image_height = static_cast<int>(image_width / aspect_ratio);
-    int samples_per_pixel = 1;
-    const int max_depth = 50;
+	int samples_per_pixel = 1000;    
+	int max_depth = 100;
+
+    if(CAM_CHECK)
+    {
+        image_width = 30;
+        image_height = static_cast<int>(image_width / aspect_ratio);
+        samples_per_pixel = 1;    
+        max_depth = 3;
+    }
 
     // Camera
 
+    // 1) Stanford Bunny
+    // Point3 lookfrom(-0.1, 0.7, -0.1);
+    // Point3 lookat(0,-0.1,0);
+
+
     // pyramid
-    //	Point3 lookfrom(13,3,3);
+    	// Point3 lookfrom(13,3,3);
     //    Point3 lookat(0,0,0);
 
     // cow
     //	Point3 lookfrom(50, 0, 50);
     //	Point3 lookat(0, 0, 0);
-
-    // dino
 
     // dino bottom
     // Point3 lookfrom(-100, -100, -100);
@@ -106,18 +96,19 @@ int main(void)
     // Point3 lookat(0, 10, 0);
 
     // bunny1
-    Point3 lookfrom(0,-1,-3);
-    Point3 lookat(0,0.65,0);
+    Point3 lookfrom(0.5, 0.3, 0.5);
+    Point3 lookat(-0.05,0.1,0);
 
     // bunny2
     //  Point3 lookfrom(-3, 2, 3);
     //  Point3 lookat(0, 0.65, 0);
 
     Vec3 vup(0, 1, 0);
-    double dist_to_focus = 10.0;
-    double aperture = 0.1;
+    float dist_to_focus = 10.0;
+    float aperture = 0.1;
     
-    Camera cam(lookfrom, lookat, vup, 10, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
+    Camera cam(lookfrom, lookat, vup, 23, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);  // SF bunny
+    // Camera cam(lookfrom, lookat, vup, 10, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);  // bunny
     //Camera cam(lookfrom, lookat, vup, 16, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0); // dino
     // Camera cam(lookfrom, lookat, vup, 10, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0); // cow
 
@@ -128,17 +119,36 @@ int main(void)
     ckCpu->clockResume();
 
     // Render an image
-    //    render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh_pyramid);
-    //    render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh_dino);
-    //    render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh_torus);
-    //    render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh_cow);
-    render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh_bunny);
+    render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh);
 
     ckCpu->clockPause();
     ckCpu->clockPrint();
 
+
     // Save a PPM image
-    ppmSave(img_name, out_image, image_width, image_height, samples_per_pixel, max_depth);
+    // Directory
+    string directory1 = "../img/" + MESHNAME + "/";
+    string directory2 = directory1 + to_string(image_width) + "x" + to_string(image_height) + "_s" + to_string(samples_per_pixel) + "_d" + to_string(max_depth) + "/";
+	
+	// if (mkdir("../img/", 0777) == -1 && mkdir(directory1.c_str(), 0777) == -1 && mkdir(directory2.c_str(), 0777) == -1)
+    if (mkdir("../img/", 0777) == -1 && mkdir(directory1.c_str(), 0777) == -1 && mkdir(directory2.c_str(), 0777) == -1)
+	{
+		//cerr << "Error :  " << strerror(errno) << endl;
+		if(errno == EEXIST)
+		{
+			cout << "File exists" << endl;
+		}
+		else cout << "No such file or directory" << endl;
+
+	}
+
+	// Filename
+    string str_lf = to_string(val(lookfrom.x())) + "_" + to_string(val(lookfrom.y())) + "_" + to_string(val(lookfrom.z()));
+    string str_la = to_string(val(lookat.x())) + "_" + to_string(val(lookat.y())) + "_" + to_string(val(lookat.z()));
+	string cam_info = "LF(" + str_lf + ")_LA(" + str_la + ")";
+	string img_path = directory2 + cam_info + ".ppm";
+	//string img_path = "../img/mant_400_s3_d50_n3/e" + to_string(BFP_EXP_BITSIZE) + "m" + to_string(BFP_MANT_BITSIZE) + "_A" + str_a + ".ppm";
+	ppmSave(img_path.c_str(), out_image, image_width, image_height, samples_per_pixel, max_depth);
 
     return 0;
 }
@@ -153,6 +163,8 @@ void render(int image_height, int image_width, int samples_per_pixel, int depth,
     float r, g, b;
     for (int j = 0; j < image_height; ++j)
     {
+        cout << "[Rendering] h: " << j << endl; 
+        
         for (int i = 0; i < image_width; ++i)
         {
             int idx = (j * image_width + i) * 3;
@@ -171,7 +183,7 @@ void render(int image_height, int image_width, int samples_per_pixel, int depth,
                 b = val(pixel_color.z());
 
                 // Antialiasing
-                double scale = 1.0 / samples_per_pixel;
+                float scale = 1.0 / samples_per_pixel;
                 r = std::sqrt(scale * r);
                 g = std::sqrt(scale * g);
                 b = std::sqrt(scale * b);
@@ -215,9 +227,10 @@ Color computeRayColor(const Ray &ray, Mesh &mesh, int depth)
     {
         // If the ray hits no object: Background
         Vec3 unit_direction = unit_vector(ray.direction());
-        fp_custom t = 0.5 * (unit_direction.y() + 1.0);
-        //fp_custom t = fp_orig_to_custom(1.5);
+        // fp_custom t = 0.5 * (unit_direction.y() + 1.0);
+        fp_custom t = fp_orig_to_custom(1.5);
 
-        return (1.0 - t) * Color(0.3, 0.3, 0.3) + t * Color(0, 0, 0);
+        // return (1.0 - t) * Color(0.3, 0.3, 0.3) + t * Color(0, 0, 0);
+        return (1.0 - t) * Color(1.0, 1.0, 1.0) + t * Color(0.5, 0.7, 1.0);       
     }
 }
