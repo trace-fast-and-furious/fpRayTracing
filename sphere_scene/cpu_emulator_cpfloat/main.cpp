@@ -16,6 +16,7 @@
 
 #define MAX_SIZE 500
 
+std::ofstream file("output.txt");
 static int tmp_count;
 
 unsigned char *image_array;
@@ -24,31 +25,176 @@ unsigned char *image_array;
 hittable_list random_scene()
 {
 	hittable_list world;
-	int count = 0;
-
 	auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
-	world.add(make_shared<sphere>(++count, point3(0.0, -1000.0, 0.0), 1000, ground_material));
+	world.add(make_shared<sphere>(0, point3(0, -1000, 0), 1000, ground_material));
+
+	color albedo;
+	shared_ptr<material> sphere_material;
+	fp_orig radius;
+	point3 center;
+
+	// diffuse
+	std::vector<point3> diffuse_center = {
+		point3(-2.434016167977825, 0.1553969955537469, -1.57034265352413),
+		point3(-2.78140190653503, 0.1606968875974417, -0.9853294855449348),
+		point3(-1.922549736965448, 0.1949327074922622, -2.526604185020552),
+		point3(-1.12642928189598, 0.1063095838297159, -1.785548041341826),
+		point3(-1.681356188375503, 0.173853431455791, 0.5759809346403928),
+		point3(-1.381997082801536, 0.1893372414167971, 1.31532416054979),
+		point3(-1.180125172669068, 0.1814766895957292, 2.615796672459692),
+		point3(-0.6251488476525993, 0.1276234671939165, -1.499200620455667),
+		point3(-0.3294357500970363, 0.1793470387812704, 1.147691740235314),
+		point3(0.1838957495056093, 0.1157807128503919, -1.100005786446855),
+		point3(0.1623350390698761, 0.1923069126904011, -0.4654970389325171),
+		point3(1.069295212719589, 0.1830011833459139, -2.199946125224232),
+		point3(1.569764973921701, 0.1231427952181548, -1.933255127165467),
+		point3(1.538633169420064, 0.1003231459762901, 0.3104486593510956),
+		point3(1.564442097442225, 0.1184622467495501, 2.548195275571198),
+		point3(2.533890309324488, 0.1436496996786445, 0.8627732652705165),
+	};
+	std::vector<color> diffuse_albedo = {
+		point3(0.6830314573462266, 0.3263749794526803, 0.3342137345449562),
+		point3(0.01704806398834827, 0.1043744601251757, 0.05502223137467545),
+		point3(0.01782517088517414, 0.04256014784906614, 0.06706205286194247),
+		point3(0.2027322988066001, 0.3192710400325286, 0.4869761366929174),
+		point3(0.1453828662755727, 0.1376259600501417, 0.6053697749897671),
+		point3(0.6073290740876693, 0.2587426093190471, 0.8212966445126793),
+		point3(0.8372314175609892, 0.03186871659593889, 0.44395328493061352),
+		point3(0.07845913301730878, 0.4492706281708823, 0.02138327088419156),
+		point3(0.01261029934147599, 0.1674184548957992, 0.03887201466009417),
+		point3(0.07216960363282493, 0.1092253098764766, 0.04810884630989146),
+		point3(0.5044335639256461, 0.1406541476592986, 0.1337180990863897),
+		point3(0.1994614315043523, 0.1737846613212816, 0.1488718963990324),
+		point3(0.2788891211304559, 0.1823443391003391, 0.2172745360030026),
+		point3(0.2059902390018757, 0.1127207911119694, 0.4024150815689432),
+		point3(0.5070200622254459, 0.3024047342823641, 0.1477628080849459),
+		point3(0.1472025960612832, 0.09519330598233622, 0.1922211974773546),
+		point3(0.09379793918068721, 0.2683274674583273, 0.5245379621937447),
+	};
+	std::vector<fp_orig> diffuse_radius = {
+		0.1553969955537468,
+		0.1606968875974417,
+		0.1949327074922621,
+		0.1063095838297159,
+		0.173853431455791,
+		0.1893372414167971,
+		0.1814766895957291,
+		0.1276234671939165,
+		0.1793470387812704,
+		0.1157807128503919,
+		0.1923069126904011,
+		0.1830011833459139,
+		0.1231427952181548,
+		0.1003231459762901,
+		0.1184622467495501,
+		0.136160090751946,
+		0.1436496996786445};
+
+	// metal
+	std::vector<point3> metal_center = {
+		point3(-2.281403970206156, 0.1394382926635445, -2.295210698945448),
+		point3(-2.528141529159621, 0.1296031617559493, 1.573797040665522),
+		point3(-2.197623493568972, 0.1769913835916668, 2.360205759713426),
+		point3(-1.96464769099839, 0.1667723760474473, -0.5215542094781995),
+		point3(-0.7470465289428829, 0.1431953418068588, -2.442363164713607),
+		point3(-0.7909646153450012, 0.1368663541506976, 0.2647443256806583),
+		point3(-0.1293353757355362, 0.173265441134572, 2.590907287411392),
+		point3(0.1841895775403828, 0.107823214167729, -2.937084242049605),
+		point3(0.0896760571282357, 0.1452575845643878, 0.6186486908700317),
+		point3(0.5660189379472287, 0.1877613777760416, 1.67302836640738),
+		point3(0.6694300862029197, 0.1831037540454418, 2.881490715965628),
+		point3(1.533285926748067, 0.1113280554767698, -0.5756649139337242),
+		point3(1.036777872499079, 0.1182555787265301, 1.559640538878739),
+		point3(2.078879265207798, 0.1257265482097865, -2.520803124736995),
+		point3(2.814439223892987, 0.1548042049631477, 2.267559607047588),
+	};
+	std::vector<fp_orig> metal_radius = {
+		0.1394382926635444,
+		0.1296031617559493,
+		0.1769913835916668,
+		0.1667723760474473,
+		0.1431953418068588,
+		0.1368663541506976,
+		0.173265441134572,
+		0.107823214167729,
+		0.1452575845643878,
+		0.1877613777760416,
+		0.1831037540454418,
+		0.1113280554767698,
+		0.1182555787265301,
+		0.1257265482097864,
+		0.1548042049631476};
+	std::vector<color> metal_albedo = {
+		point3(0.6676113777793944, 0.598775684600696, 0.9558236787561327),
+		point3(0.6462583921384066, 0.9863875117152929, 0.7467914933804423),
+		point3(0.9038622598163784, 0.6762291735503823, 0.6416573729366064),
+		point3(0.9654048974625766, 0.9659175279084593, 0.7188187981955707),
+		point3(0.7235167894978076, 0.6537289367988706, 0.8930010488256812),
+		point3(0.5761948958970606, 0.6222063677851111, 0.7922442501876503),
+		point3(0.5467402385547757, 0.87986742076464, 0.8197291726246476),
+		point3(0.786659314064309, 0.9098386398982257, 0.730710236588493),
+		point3(0.6521475748158991, 0.8786469160113484, 0.7654039938934147),
+		point3(0.9166192708071321, 0.8739014333114028, 0.5177104533649981),
+		point3(0.8334401671309024, 0.9917978688608855, 0.9516831699293107),
+		point3(0.6681755627505481, 0.7254587789066136, 0.9721590478438884),
+		point3(0.8369682480115443, 0.8479918953962624, 0.7069918697234243),
+		point3(0.8430624636821449, 0.9386919636745006, 0.6302484711632133),
+		point3(0.7490719631314278, 0.9369894838891923, 0.9548214785754681)};
+	std::vector<fp_orig> metal_fuzz = {
+		0.3841147972270846,
+		0.3856788487173617,
+		0.4595132367685437,
+		0.3604761713650078,
+		0.1130533125251532,
+		0.3660742577631027,
+		0.06745120580308139,
+		0.377790417522192,
+		0.4961142304819077,
+		0.4626882753800601,
+		0.2486292594112456,
+		0.4238422177731991,
+		0.318820076296106,
+		0.04687011800706387,
+		0.2880997739266604};
+
+	// dialectric
+	std::vector<point3> dielectric_center = {
+		point3(-2.244798989128322, 0.1218256905209273, 0.4616391547489912),
+		point3(-0.655130502069369, 0.1935003986116499, -0.3839994851034134),
+		point3(2.298331167828292, 0.100357857439667, -0.2553479784633964),
+		point3(2.183193394634872, 0.1916272911708802, 1.775725410040468)};
+	std::vector<fp_orig> dielectric_radius = {
+		0.1218256905209273,
+		0.1935003986116499,
+		0.100357857439667,
+		0.1916272911708802};
+
+	for (int i = 0; i < diffuse_center.size(); i++)
+	{
+		sphere_material = make_shared<lambertian>(diffuse_albedo[i]);
+		world.add(make_shared<sphere>(0, diffuse_center[i], diffuse_radius[i], sphere_material));
+	}
+	for (int i = 0; i < metal_center.size(); i++)
+	{
+		sphere_material = make_shared<metal>(metal_albedo[i], metal_fuzz[i]);
+		world.add(make_shared<sphere>(0, metal_center[i], metal_radius[i], sphere_material));
+	}
+	for (int i = 0; i < dielectric_center.size(); i++)
+	{
+		sphere_material = make_shared<dielectric>(1.5);
+		world.add(make_shared<sphere>(0, dielectric_center[i], dielectric_radius[i], sphere_material));
+	}
 
 	auto material1 = make_shared<dielectric>(1.5);
-	world.add(make_shared<sphere>(++count, point3(0.0, 1.0, 0.0), 1.0, material1));
+	world.add(make_shared<sphere>(0, point3(0, 0.7, 0), 0.7, material1));
 
 	auto material2 = make_shared<lambertian>(color(0.4, 0.2, 0.1));
-	world.add(make_shared<sphere>(++count, point3(-4.0, 1.0, 0.0), 1.0, material2));
+	world.add(make_shared<sphere>(0, point3(-4, 0.7, 0), 0.7, material2));
 
-	auto material3 = make_shared<metal>(color(0.7, 0.6, 0.6), 0.0);
-	world.add(make_shared<sphere>(++count, point3(4, 1, 0), 1, material3));
+	auto material3 = make_shared<metal>(color(0.7, 0.6, 0.5), 0.0);
+	world.add(make_shared<sphere>(0, point3(4, 0.7, 0), 0.7, material3));
 
-	// auto material3 = make_shared<metal>(color(0.7, 0.6, 0.5), 0);
-	// world.add(make_shared<sphere>(++count, point3(0, -1000, 0), 1000, material3));
-	// world.add(make_shared<sphere>(++count, point3(0, 1, 0), 1, material3));
-	// world.add(make_shared<sphere>(++count, point3(-4, 1, 0), 1, material3));
-	// world.add(make_shared<sphere>(++count, point3(4, 1, 0), 1, material3));
-
-	// Constructing BVH
-	hittable_list world_bvh;
-	world_bvh.add(make_shared<bvh_node>(world, 0, 1));
-
-	return world_bvh;
+	return world;
 }
 
 // 2. ray_color: calculates color of the current ray intersection point.
@@ -59,8 +205,8 @@ color ray_color(const ray &r, const hittable &world, int depth)
 	if (depth <= 0)
 		return color(0, 0, 0);
 
-	if (world.hit(r, 0.1, std::numeric_limits<fp_orig>::infinity(), rec)) // hit: 충돌지점을 결정(child ray 의 origin)
-	{																	  // if ray hits object
+	if (world.hit(r, 0.01, std::numeric_limits<fp_orig>::infinity(), rec)) // hit: 충돌지점을 결정(child ray 의 origin)
+	{																	   // if ray hits object
 		ray scattered;
 		color attenuation;
 		if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)) // scatter: child ray 방향성을 결정
@@ -86,7 +232,6 @@ color ray_color(const ray &r, const hittable &world, int depth)
 // 3. main
 int main()
 {
-
 	// Allocate the data structure for target formats and rounding parameters.
 	fpopts = init_optstruct();
 
@@ -210,6 +355,8 @@ int main()
 	ckWolrdBVH->clockPrint();
 	ckRendering->clockPrint();
 
+	file.close();
+
 	/* Save image */
 	if (DEBUG)
 	{
@@ -223,7 +370,8 @@ int main()
 
 	// creating directory
 	string cp_size = to_string(CP_EXP_BITSIZE) + "_" + to_string(CP_MANT_BITSIZE);
-	string directory = "../images/emulator_cpfloat/1000_50/" + string(typeid(fp_orig).name());
+	// string directory = "../images/emulator_cpfloat/test/" + string(typeid(fp_orig).name());
+	string directory = "../images/emulator_cpfloat/1000_50_36spheres/" + string(typeid(fp_orig).name());
 	if (DATE)
 		directory += "_" + to_string(timeStamp);
 	if (mkdir(directory.c_str(), 0777) == -1)
