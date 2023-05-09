@@ -30,6 +30,7 @@
 #define MESH_H
 
 #include "material.h"
+#include "aabb.h"
 
 #define POLYGON 3
 #define DIMENSION 3
@@ -72,6 +73,7 @@ public:
     void setVertices(vector<Vertex> vertices);
     void setFaces(vector<Face> faces);
     void setMaterial(shared_ptr<Material> material);
+    void setBoundingBox();
 
     // Computing sizes
     int getNumVertices() const;
@@ -81,7 +83,8 @@ public:
     const vector<Vertex> &getVertices() const;
     const vector<Face> &getFaces() const;
     const shared_ptr<Material> &getMaterial() const;
-    //	const AABB& getBoundingBox() const override;
+    const shared_ptr<Aabb> &getBoundingBox() const;
+
     Vec3 getVertexPos(int face, int v) const;
     Vec3 getVertexNorm(int face, int v) const;
     Vec3 getPointNorm(int face, fp_custom u, fp_custom v) const;
@@ -95,8 +98,8 @@ private:
     //	void updateBoundingBox();
     vector<Vertex> m_vertices; // stores actual values of its position and normal vector elements
     vector<Face> m_faces;      // stores indices of its vertices and normals
-                               //	AABB m_boundingBox;
     shared_ptr<Material> m_material;
+    shared_ptr<Aabb> m_aabb;
 };
 
 // Function Prototypes
@@ -510,15 +513,14 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
 
 bool Mesh::hit(const Ray &ray, fp_orig __min_t, HitRecord &rec)
 {
-    /*
-        // First intersect ray with AABB to quickly discard non-intersecting rays
-        if (!m_boundingBox.hit(this.boundingBox(), ray))
-        {
-            return false;
-        }
-    */
     bool is_hit = false;
     rec.t = fp_orig_to_custom(std::numeric_limits<double>::max());
+
+    // First intersect ray with AABB to quickly discard non-intersecting rays
+    // if (!m_aabb->hit(ray, fp_orig_to_custom(__min_t), rec.t))
+    // {
+    //     return false;
+    // }
 
     // Iterate over all triangles in the mesh
     int f_num = getNumFaces();
@@ -587,6 +589,7 @@ bool testRayTriangleHit(const Ray &ray, fp_custom *t, Vec3 &bary, const Vec3 &v0
     fp_custom det = dot(e1, pvec);
 
     if (det <= 0.000001f)
+    // if (det <= 0.0001f)
         return false; // If the determinant is near zero, ray // plane
 
     // 2. Do the intersection test using Barycentric coordinates (u, v, w)
@@ -659,5 +662,50 @@ Vec3 getBarycentric(Vec3 &p, const Vec3 &v0, const Vec3 &v1, const Vec3 &v2)
 
     return Vec3(u, v, w);
 }
+
+// Initialize AABB of each triangle in mesh
+void Mesh::setBoundingBox()
+{    
+    // Check if the face array is empty
+    //assert(m_faces.empty());
+    
+    // for all faces in mesh
+    Aabb box;
+    Vec3 cur_v;
+    cur_v = getVertexPos(0, 0);
+
+    Vec3 box_min, box_max;  // minimum, maximum points of AABB (of current AABB)
+    fp_custom x_max = cur_v.x(), x_min = cur_v.x();
+    fp_custom y_max = cur_v.y(), y_min = cur_v.y();
+    fp_custom z_max = cur_v.z(), z_min = cur_v.z();
+
+    for(int f = 0; f < getNumFaces(); f++)
+    {
+        // for all vertices in the face
+        for (int v = 0; v < 3; v++)
+        {
+            // Get the current vertex position
+            cur_v = getVertexPos(f, v);
+
+            // Compute the minimum, maximum points of the current face
+            x_min = (x_min > cur_v.x()) ? cur_v.x() : x_min;
+            y_min = (y_min > cur_v.y()) ? cur_v.y() : y_min;
+            z_min = (z_min > cur_v.z()) ? cur_v.z() : z_min;
+
+            x_max = (x_max < cur_v.x()) ? cur_v.x() : x_max;
+            y_max = (y_max < cur_v.y()) ? cur_v.y() : y_max;
+            z_max = (z_max < cur_v.z()) ? cur_v.z() : z_max;
+        }
+        // #DEBUGGING
+        //cout << "face " << f << ": Min = (" << box_min << ", Max = (" << box_max << ")" << endl;
+    }
+    box_min = Vec3{x_min, y_min, z_min};
+    box_max = Vec3{x_max, y_max, z_max};
+    box = Aabb{box_min, box_max};
+
+    *m_aabb = box;
+}
+
+
 
 #endif

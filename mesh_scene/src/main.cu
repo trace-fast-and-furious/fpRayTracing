@@ -15,9 +15,6 @@
 #include "mkClockMeasure.h"
 #include "mkPpm.h"
 
-#define CAM_CHECK 0
-
-
 using namespace custom_precision_fp;
 
 // Function Prototypes
@@ -27,7 +24,8 @@ void render(int image_height, int image_width, int samples_per_pixel, int depth,
 // Global variables
 unsigned char *out_image;
 const string MESHNAME = "stanford_bunny";
-
+const char IMG_TYPE = '1';  // 1: for SSIM graph, 2: for output image
+fp_orig t_epsilon = 0.001;
 
 int main(void)
 {
@@ -51,77 +49,77 @@ int main(void)
     Mesh mesh;
 
     // material
-    auto metal = make_shared<Metal>(Color(0.6, 0.6, 0.3), 0.2);
+    auto metal = make_shared<Metal>(Color(0.6, 0.6, 0.3), 0);
     auto dielectric = make_shared<Dielectric>(0.3);
     auto lambertian = make_shared<Lambertian>(Color(0.8, 0.6, 0.3));
     auto dielectric2 = make_shared<Dielectric>(0.1);
 
-    // filename
-    string img_filename = MESHNAME + ".ppm";  // output image file
-    char p_img_filename[30];
-    strcpy(p_img_filename, img_filename.c_str());
-    string mesh_filename = "../obj/" + MESHNAME + ".obj";  // object file
-
-    // Load meshes    
+    // Load meshes  
+    string mesh_filename = "../obj/" + MESHNAME + ".obj";  // object file  
 	loadObjFile(mesh_filename, mesh);
-    mesh.setMaterial(lambertian);   
+    mesh.setMaterial(metal);   
     // printMesh(mesh_filename, mesh);
 
     // Image
 	// auto aspect_ratio = 16.0 / 9.0;
     auto aspect_ratio = 1;
-	int image_width = 512;
-    int image_height = static_cast<int>(image_width / aspect_ratio);
-	int samples_per_pixel = 100;    
-	int max_depth = 100;
+    int image_width, image_height, samples_per_pixel, max_depth;
 
-    if(CAM_CHECK)
-    {
-        image_width = 30;
+    if(IMG_TYPE == '1'){
+        image_width = 50;
         image_height = static_cast<int>(image_width / aspect_ratio);
-        samples_per_pixel = 1;    
-        max_depth = 3;
+        samples_per_pixel = 10;    
+        max_depth = 50;
+    }
+    else if(IMG_TYPE == '2')
+    {
+        image_width = 128;
+        image_height = static_cast<int>(image_width / aspect_ratio);
+        samples_per_pixel = 10;    
+        max_depth = 50;
     }
 
     // Camera
-
-    // 1) Stanford Bunny
-    // Point3 lookfrom(-0.1, 0.7, -0.1);
-    // Point3 lookat(0,-0.1,0);
-
-
-    // pyramid
-    	// Point3 lookfrom(13,3,3);
-    //    Point3 lookat(0,0,0);
-
-    // cow
-    //	Point3 lookfrom(50, 0, 50);
-    //	Point3 lookat(0, 0, 0);
-
-    // dino bottom
-    // Point3 lookfrom(-100, -100, -100);
-    // Point3 lookat(0, 5.5, 0);
-
-    // dino front
-    // Point3 lookfrom(-200, 0, 0);
-    // Point3 lookat(0, 10, 0);
-
-    // bunny1
-    Point3 lookfrom(0.5, 0.3, 0.5);
-    Point3 lookat(-0.05,0.1,0);
-
-    // bunny2
-    //  Point3 lookfrom(-3, 2, 3);
-    //  Point3 lookat(0, 0.65, 0);
-
     Vec3 vup(0, 1, 0);
     float dist_to_focus = 10.0;
     float aperture = 0.1;
     
-    Camera cam(lookfrom, lookat, vup, 23, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);  // SF bunny
-    // Camera cam(lookfrom, lookat, vup, 10, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);  // bunny
-    //Camera cam(lookfrom, lookat, vup, 16, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0); // dino
-    // Camera cam(lookfrom, lookat, vup, 10, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0); // cow
+    int fov;  // field of view
+    Point3 lookfrom, lookat;
+
+    if(!(MESHNAME.compare("stanford_bunny"))){
+        lookfrom = Point3(0.5, 0.3, 0.5);
+        lookat = Point3(-0.05,0.1,0);
+        fov = 23;
+        t_epsilon = 0.06;
+    }
+    else if(!(MESHNAME.compare("dragon"))) {
+        lookfrom = Point3(0.25, 0.3, 0.5);
+        lookat = Point3(0.0,0.1,0);
+        fov = 25;
+        t_epsilon = 0.05;
+    }
+    else if(!(MESHNAME.compare("Armadillo"))) {
+        lookfrom = Point3(-50, -50, -50);
+        lookat = Point3(0,0,0);
+        fov = 1000;
+        t_epsilon = 0.01;
+    }
+    else if(!(MESHNAME.compare("HappyBuddha"))) {
+        lookfrom = Point3(0.3, 0.3, 0.5);
+        lookat = Point3(0,0.1,0);
+        fov = 35;
+        t_epsilon = 0.05;
+    }
+
+    if(CP_EXP_BITSIZE == 11 && CP_MANT_BITSIZE == 52){
+        t_epsilon = 0.001;
+    }
+
+    Camera cam(lookfrom, lookat, vup, fov, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);  // pyramid
+    // Camera cam(lookfrom, lookat, vup, 16, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);  // bunny
+    // Camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);  // dino, bunny2_2
+    // Camera cam(lookfrom, lookat, vup, 6, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);  // pig
 
     // Rendered Image Array
     out_image = (unsigned char *)malloc(sizeof(unsigned char) * image_width * image_height * 3);
@@ -129,37 +127,76 @@ int main(void)
     // Measure the rendering time
     ckCpu->clockResume();
 
+
     // Render an image
+    cout << "Image Type: " << IMG_TYPE << ". ";
+    if(IMG_TYPE == '1') cout << "SSIM" << endl;
+    else if(IMG_TYPE == '2') cout << "SHOW" << endl;
+
+    cout << MESHNAME << ".ppm: " << image_width << "x" << image_height << "_s" << samples_per_pixel << "_d" << max_depth << "_e" << t_epsilon << endl;
+    cout << "  - Exponent: " << to_string(CP_EXP_BITSIZE) << ", Mantissa: " << to_string(CP_MANT_BITSIZE) << endl;
     render(image_height, image_width, samples_per_pixel, max_depth, out_image, cam, mesh);
 
     ckCpu->clockPause();
     ckCpu->clockPrint();
 
-
     // Save a PPM image
-    // Directory
-    string directory1 = "../img/" + MESHNAME + "/";
-    string directory2 = directory1 + to_string(image_width) + "x" + to_string(image_height) + "_s" + to_string(samples_per_pixel) + "_d" + to_string(max_depth) + "/";
-	
-	// if (mkdir("../img/", 0777) == -1 && mkdir(directory1.c_str(), 0777) == -1 && mkdir(directory2.c_str(), 0777) == -1)
-    if (mkdir("../img/", 0777) == -1 && mkdir(directory1.c_str(), 0777) == -1 && mkdir(directory2.c_str(), 0777) == -1)
+    // Directories
+    string directory1, directory2, directory3;
+    
+    if(IMG_TYPE == '1') {
+        directory1 = "../img1.SSIM/";
+        directory2 = directory1 + MESHNAME + "_E" + to_string(CP_EXP_BITSIZE) + "_M" + to_string(CP_MANT_BITSIZE) + "/";
+        directory3 = directory2 + to_string(image_width) + "x" + to_string(image_height) + "_s" + to_string(samples_per_pixel) + "_d" + to_string(max_depth) + "/";
+    }
+    if(IMG_TYPE == '2') {
+        directory1 = "../img2.SHOW/";
+        directory2 = directory1 + MESHNAME + "_E" + to_string(CP_EXP_BITSIZE) + "_M" + to_string(CP_MANT_BITSIZE) + "/";
+        directory3 = directory2 + to_string(image_width) + "x" + to_string(image_height) + "_s" + to_string(samples_per_pixel) + "_d" + to_string(max_depth) + "/";
+    }
+
+    if (mkdir(directory1.c_str(), 0777) == -1)
 	{
 		//cerr << "Error :  " << strerror(errno) << endl;
 		if(errno == EEXIST)
 		{
-			cout << "File exists" << endl;
+			cout << "1: File exists" << endl;
 		}
-		else cout << "No such file or directory" << endl;
+		else cout << "1: No such file or directory" << endl;
+
+	}
+    if (mkdir(directory2.c_str(), 0777) == -1)
+	{
+		//cerr << "Error :  " << strerror(errno) << endl;
+		if(errno == EEXIST)
+		{
+			cout << "2: File exists" << endl;
+		}
+		else cout << "2: No such file or directory" << endl;
+
+	}
+    if (mkdir(directory3.c_str(), 0777) == -1)
+	{
+		//cerr << "Error :  " << strerror(errno) << endl;
+		if(errno == EEXIST)
+		{
+			cout << "3: File exists" << endl;
+		}
+		else cout << "3: No such file or directory" << endl;
 
 	}
 
 	// Filename
     string str_lf = to_string(val(lookfrom.x())) + "_" + to_string(val(lookfrom.y())) + "_" + to_string(val(lookfrom.z()));
     string str_la = to_string(val(lookat.x())) + "_" + to_string(val(lookat.y())) + "_" + to_string(val(lookat.z()));
-	string cam_info = "LF(" + str_lf + ")_LA(" + str_la + ")";
-	string img_path = directory2 + cam_info + ".ppm";
-	//string img_path = "../img/mant_400_s3_d50_n3/e" + to_string(BFP_EXP_BITSIZE) + "m" + to_string(BFP_MANT_BITSIZE) + "_A" + str_a + ".ppm";
-	ppmSave(img_path.c_str(), out_image, image_width, image_height, samples_per_pixel, max_depth);
+	// string cam_info = "LF(" + str_lf + ")_LA(" + str_la + ")" + "_fov" + to_string(fov);
+	// string img_path = directory2 + cam_info + ".ppm";
+	
+    
+    string img_path = directory3 + MESHNAME + "_w" + to_string(image_width) + "_s" + to_string(samples_per_pixel) + "_d" + to_string(max_depth) + "_e" + to_string(t_epsilon) + ".ppm";
+    // string img_path = "../img_final_HP/" + MESHNAME + "_w" + to_string(image_width) + "_s" + to_string(samples_per_pixel) + "_d" + to_string(max_depth) + ".ppm";
+
+    ppmSave(img_path.c_str(), out_image, image_width, image_height, samples_per_pixel, max_depth);
 
     return 0;
 }
@@ -178,7 +215,7 @@ void render(int image_height, int image_width, int samples_per_pixel, int depth,
         
         for (int i = 0; i < image_width; ++i)
         {
-            cout << "[Rendering] w: " << j << endl; 
+            // cout << "[Rendering] w: " << i << endl; 
 
             int idx = (j * image_width + i) * 3;
             Color pixel_color(0, 0, 0);
@@ -224,7 +261,7 @@ Color computeRayColor(const Ray &ray, Mesh &mesh, int depth)
     }
 
     // If the ray hits an object
-    if (mesh.hit(ray, 0.001, rec))
+    if (mesh.hit(ray, t_epsilon, rec))  // updated (230507)
     {
         Ray ray_scattered;
         Color attenuation;
@@ -240,8 +277,14 @@ Color computeRayColor(const Ray &ray, Mesh &mesh, int depth)
     {
         // If the ray hits no object: Background
         Vec3 unit_direction = unit_vector(ray.direction());
-        // fp_custom t = 0.5 * (unit_direction.y() + 1.0);
-        fp_custom t = fp_orig_to_custom(1.5);
+        fp_custom t;
+
+        if(IMG_TYPE == '1') {  // SSIM
+            t = fp_orig_to_custom(1.5);  // no gradation
+        }
+        else if(IMG_TYPE == '2') {  // SHOW
+            t = 0.5 * (unit_direction.y() + 1.0);  // gradation and more realistic shadow
+        }
 
         // return (1.0 - t) * Color(0.3, 0.3, 0.3) + t * Color(0, 0, 0);
         return (1.0 - t) * Color(1.0, 1.0, 1.0) + t * Color(0.5, 0.7, 1.0);       
