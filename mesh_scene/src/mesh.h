@@ -30,9 +30,12 @@
 #define MESH_H
 
 #include "material.h"
+#include "aabb.h"
 
 #define POLYGON 3
 #define DIMENSION 3
+#define NV_IN_FILE false
+
 
 using namespace custom_precision_fp;
 using namespace std;
@@ -70,6 +73,7 @@ public:
     void setVertices(vector<Vertex> vertices);
     void setFaces(vector<Face> faces);
     void setMaterial(shared_ptr<Material> material);
+    void setBoundingBox();
 
     // Computing sizes
     int getNumVertices() const;
@@ -79,10 +83,14 @@ public:
     const vector<Vertex> &getVertices() const;
     const vector<Face> &getFaces() const;
     const shared_ptr<Material> &getMaterial() const;
-    //	const AABB& getBoundingBox() const override;
+    const shared_ptr<Aabb> &getBoundingBox() const;
+
     Vec3 getVertexPos(int face, int v) const;
     Vec3 getVertexNorm(int face, int v) const;
     Vec3 getPointNorm(int face, fp_custom u, fp_custom v) const;
+
+    // 230504: Calculate normal of each triangle(plane)
+    Vec3 getTriNorm(int face) const;  // 230504: 오브젝트 파일 안에 VN이 제공되지 않는 경우, 삼각형마다 법선 벡터를 직접 구해야 함
 
     bool hit(const Ray &ray, fp_orig __min_t, HitRecord &rec);
 
@@ -90,8 +98,8 @@ private:
     //	void updateBoundingBox();
     vector<Vertex> m_vertices; // stores actual values of its position and normal vector elements
     vector<Face> m_faces;      // stores indices of its vertices and normals
-                               //	AABB m_boundingBox;
     shared_ptr<Material> m_material;
+    shared_ptr<Aabb> m_aabb;
 };
 
 // Function Prototypes
@@ -114,6 +122,7 @@ void printMesh(string filename, Mesh &mesh)
     cout << "======================================"
          << "Printing Mesh Information " << filename << "======================================" << endl;
 
+  
     // Vertices
     cout << "<Vertex Positions>" << endl;
     for (int v = 0; v < num_v; v++)
@@ -124,6 +133,7 @@ void printMesh(string filename, Mesh &mesh)
     cout << endl;
 
     cout << "<Vertex Normals>" << endl;
+   
     // Normals
     for (int v = 0; v < num_v; v++)
     {
@@ -132,12 +142,12 @@ void printMesh(string filename, Mesh &mesh)
     }
     cout << endl;
 
-    cout << "<Faces>" << endl;
+    // cout << "<Faces>" << endl;
     for (int f = 0; f < num_f; f++)
     {
         Face cur_f = m_faces[f];
-        //    cout << "Face " << f << ": V " << cur_f.vertices[0]+1 << " " << cur_f.vertices[1]+1 << " " << cur_f.vertices[2]+1 << endl;
-        cout << "Face " << f << endl;
+        cout << "Face " << f << ": V " << cur_f.vertices[0]+1 << " " << cur_f.vertices[1]+1 << " " << cur_f.vertices[2]+1 << endl;
+        // cout << "Face " << f << endl;
         for (int v = 0; v < cur_f.vertices.size(); v++)
         {
 
@@ -145,7 +155,7 @@ void printMesh(string filename, Mesh &mesh)
             // Vec3 cur_n = m_vertices[cur_f.vertices[v]].normal;
             Vec3 cur_v = mesh.getVertexPos(f, v);
             Vec3 cur_n = mesh.getVertexNorm(f, v);
-            cout << "Vertex " << v << ": P=(" << cur_v << "), N=(" << cur_n << ")" << endl;
+            // cout << "Vertex " << v << ": P=(" << cur_v << "), N=(" << cur_n << ")" << endl;
         }
         cout << endl;
     }
@@ -263,6 +273,21 @@ Vec3 Mesh::getPointNorm(int face, fp_custom u, fp_custom v) const
     return unit_vector(normal_vector);
 }
 
+// Compute normal vector of an arbitrary point inside the face using interpolation
+Vec3 Mesh::getTriNorm(int face) const
+{
+    const Vec3& v0 = getVertexPos(face, 0);
+    const Vec3& v1 = getVertexPos(face, 1);
+    const Vec3& v2 = getVertexPos(face, 2);
+    
+    Vec3 e1 = v1- v0;  // v0v1
+    Vec3 e2 = v2- v0;  // v0v2
+    Vec3 norm = cross(e1, e2); // this is the triangle's normal
+    norm = unit_vector(norm);
+
+    return norm;
+}
+
 // loadObjFile: Load a mesh (.obj) file
 bool loadObjFile(string filename, Mesh &mesh)
 {
@@ -292,8 +317,8 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
         return false;
     }
 
-    cout << "======================================"
-         << "Opening file " << filename << "======================================" << endl;
+    // cout << "======================================"
+    //      << "Opening file " << filename << "======================================" << endl;
 
     // raw data
     vector<Vec3> raw_vertices;
@@ -317,7 +342,7 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
         line_type = line.substr(0, pos);                 // substring before space
         line_rest = line.substr(pos + 1, line.length()); // substring after space
 
-        cout << line_type << " ";
+        // cout << line_type << " ";
 
         // 1) Vertex line
         if (line_type == "v") // v x y z
@@ -331,7 +356,7 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
                 e[i] = stof(line_rest.substr(cur_pos, len));
                 cur_pos = pos + 1; // Move on to the next element
 
-                cout << e[i] << " "; // debugging
+                // cout << e[i] << " "; // debugging
             }
             Vec3 v = Vec3(e[0], e[1], e[2]);
             raw_vertices.push_back(v); // add the current vertex data to the collection
@@ -347,7 +372,7 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
                 e[i] = stof(line_rest.substr(cur_pos, len));
                 cur_pos = pos + 1; // Move on to the next element
 
-                cout << e[i] << " "; // debugging
+                // cout << e[i] << " "; // debugging
             }
             Vec3 v = Vec3(e[0], e[1], e[2]);
             raw_normals.push_back(v); // add the current vertex data to the collection
@@ -376,7 +401,7 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
 
                 if (has_only_vertices)
                 {
-                    cout << v_e[i] << " "; // debugging
+                    // cout << v_e[i] << " "; // debugging
                     continue;
                 }
 
@@ -390,7 +415,7 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
                 n_e[i] = stoi(line_rest.substr(cur_pos, len));
                 cur_pos = pos + 1;
 
-                cout << v_e[i] << "//" << n_e[i] << " "; // debugging
+                // cout << v_e[i] << "//" << n_e[i] << " "; // debugging
             }
 
             v_elements.push_back(v_e[0] - 1);
@@ -411,7 +436,7 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
                         cur_pos = pos + 1;  // Move on to the next element
                     }
         */
-        cout << endl;
+        // cout << endl;
     }
 
     // Close the file
@@ -488,15 +513,14 @@ bool loadObjFile(string filename, vector<Vertex> &vertices, vector<Face> &faces)
 
 bool Mesh::hit(const Ray &ray, fp_orig __min_t, HitRecord &rec)
 {
-    /*
-        // First intersect ray with AABB to quickly discard non-intersecting rays
-        if (!m_boundingBox.hit(this.boundingBox(), ray))
-        {
-            return false;
-        }
-    */
     bool is_hit = false;
     rec.t = fp_orig_to_custom(std::numeric_limits<double>::max());
+
+    // First intersect ray with AABB to quickly discard non-intersecting rays
+    // if (!m_aabb->hit(ray, fp_orig_to_custom(__min_t), rec.t))
+    // {
+    //     return false;
+    // }
 
     // Iterate over all triangles in the mesh
     int f_num = getNumFaces();
@@ -525,7 +549,16 @@ bool Mesh::hit(const Ray &ray, fp_orig __min_t, HitRecord &rec)
 
                 bary = getBarycentric(rec.p, v0, v1, v2);
 
-                rec.normal = getPointNorm(f, bary.x(), bary.y()); // normal at the intersection point
+                if(NV_IN_FILE)  
+                { 
+                    rec.normal = getPointNorm(f, bary.x(), bary.y());  // normal at the intersection point
+                }
+                else
+                {
+                    rec.normal = getTriNorm(f);
+                }
+
+                // rec.normal = getPointNorm(f, bary.x(), bary.y()); // normal at the intersection point
                 rec.is_front_face = dot(ray.direction(), rec.normal) < 0;
                 rec.mat_ptr = m_material;
 
@@ -555,7 +588,8 @@ bool testRayTriangleHit(const Ray &ray, fp_custom *t, Vec3 &bary, const Vec3 &v0
     Vec3 pvec = cross(ray.dir, e2);
     fp_custom det = dot(e1, pvec);
 
-    if (det <= 0.0001)
+    if (det <= 0.000001f)
+    // if (det <= 0.0001f)
         return false; // If the determinant is near zero, ray // plane
 
     // 2. Do the intersection test using Barycentric coordinates (u, v, w)
@@ -628,5 +662,50 @@ Vec3 getBarycentric(Vec3 &p, const Vec3 &v0, const Vec3 &v1, const Vec3 &v2)
 
     return Vec3(u, v, w);
 }
+
+// Initialize AABB of each triangle in mesh
+void Mesh::setBoundingBox()
+{    
+    // Check if the face array is empty
+    //assert(m_faces.empty());
+    
+    // for all faces in mesh
+    Aabb box;
+    Vec3 cur_v;
+    cur_v = getVertexPos(0, 0);
+
+    Vec3 box_min, box_max;  // minimum, maximum points of AABB (of current AABB)
+    fp_custom x_max = cur_v.x(), x_min = cur_v.x();
+    fp_custom y_max = cur_v.y(), y_min = cur_v.y();
+    fp_custom z_max = cur_v.z(), z_min = cur_v.z();
+
+    for(int f = 0; f < getNumFaces(); f++)
+    {
+        // for all vertices in the face
+        for (int v = 0; v < 3; v++)
+        {
+            // Get the current vertex position
+            cur_v = getVertexPos(f, v);
+
+            // Compute the minimum, maximum points of the current face
+            x_min = (x_min > cur_v.x()) ? cur_v.x() : x_min;
+            y_min = (y_min > cur_v.y()) ? cur_v.y() : y_min;
+            z_min = (z_min > cur_v.z()) ? cur_v.z() : z_min;
+
+            x_max = (x_max < cur_v.x()) ? cur_v.x() : x_max;
+            y_max = (y_max < cur_v.y()) ? cur_v.y() : y_max;
+            z_max = (z_max < cur_v.z()) ? cur_v.z() : z_max;
+        }
+        // #DEBUGGING
+        //cout << "face " << f << ": Min = (" << box_min << ", Max = (" << box_max << ")" << endl;
+    }
+    box_min = Vec3{x_min, y_min, z_min};
+    box_max = Vec3{x_max, y_max, z_max};
+    box = Aabb{box_min, box_max};
+
+    *m_aabb = box;
+}
+
+
 
 #endif

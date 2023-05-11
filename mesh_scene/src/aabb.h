@@ -12,8 +12,12 @@
 // Preprocessors
 # pragma once
 
-#include "utility.h"
+#include "vec3.h"
+#include "ray.h"
 
+
+#include <iostream>
+using namespace std;
 
 // Classes
 class Aabb {
@@ -26,7 +30,7 @@ public:
 	Point3 min() const { return minimum; }
 	Point3 max() const { return maximum; }
 
-	bool hit(const Ray& r, float t_min, float t_max) const;
+	bool hit(const Ray& r, fp_custom t_min, fp_custom t_max) const;
 
 private:
 	Point3 minimum;
@@ -35,18 +39,19 @@ private:
 
 
 // Function Definitions
-bool Aabb::hit(const Ray& r, float t_min, float t_max) const 
+bool Aabb::hit(const Ray& r, fp_custom t_min, fp_custom t_max) const 
 {
 	for (int a = 0; a < 3; a++) 
 	{
-		float t0 = fmin((minimum[a] - r.origin()[a]) / r.direction()[a], 
-			(maximum[a] - r.origin()[a]) / r.direction()[a]);
-		float t1 = fmax((minimum[a] - r.origin()[a]) / r.direction()[a], 
-			(maximum[a] - r.origin()[a]) / r.direction()[a]);
+		fp_custom tmp_min = (minimum[a] - r.origin()[a]) / r.direction()[a];
+		fp_custom tmp_max = (maximum[a] - r.origin()[a]) / r.direction()[a];
+
+		fp_custom t0 = (tmp_min <= tmp_max) ? tmp_min : tmp_max;
+		fp_custom t1 = (tmp_min > tmp_max) ? tmp_min : tmp_max;
 		
 		// intersection time
-		t_min = fmax(t0, t_min);
-		t_max = fmin(t1, t_max);
+		t_min = (t0 > t_min) ? t0 : t_min;
+		t_max = (t1 < t_max) ? t1 : t_max;
 		
 		if (t_max <= t_min)  // not hit
 			return false;
@@ -71,15 +76,15 @@ inline bool aabb::hit(const ray& r, float t_min, float t_max) const {
 }
 */
 
-inline Aabb computeSurroundingBox(Aabb box0, Aabb box1) {
-	// Compute minimum and maximum points of AABB
-	Point3 box_min(fmin(box0.min().x(), box1.min().x()),
-			fmin(box0.min().y(), box1.min().y()),
-			fmin(box0.min().z(), box1.min().z()));
+// inline Aabb computeSurroundingBox(Aabb box0, Aabb box1) {
+// 	// Compute minimum and maximum points of AABB
+// 	Point3 box_min(fmin(box0.min().x(), box1.min().x()),
+// 			fmin(box0.min().y(), box1.min().y()),
+// 			fmin(box0.min().z(), box1.min().z()));
 
-	Point3 box_max(fmax(box0.max().x(), box1.max().x()),
-		fmax(box0.max().y(), box1.max().y()),
-		fmax(box0.max().z(), box1.max().z()));
+// 	Point3 box_max(fmax(box0.max().x(), box1.max().x()),
+// 		fmax(box0.max().y(), box1.max().y()),
+// 		fmax(box0.max().z(), box1.max().z()));
 
-	return Aabb(box_min, box_max);
-}
+// 	return Aabb(box_min, box_max);
+// }

@@ -41,7 +41,10 @@ struct e_custom
 };
 
 /* precision settings */
-#define CP_EXP_BITSIZE 11
-#define CP_MANT_BITSIZE 52
+#define CP_EXP_BITSIZE 6  
+#define CP_MANT_BITSIZE 20
+
+// #define CP_EXP_BITSIZE 11  
+// #define CP_MANT_BITSIZE 52
 
 optstruct *fpopts = init_optstruct();
