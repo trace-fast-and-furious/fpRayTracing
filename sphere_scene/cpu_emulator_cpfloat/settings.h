@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <limits>
 #include <string.h>
@@ -35,7 +36,8 @@ struct e_custom
 };
 
 /* precision settings */
-#define CP_EXP_BITSIZE 6
-#define CP_MANT_BITSIZE 10
+#define CP_EXP_BITSIZE 10
+#define CP_MANT_BITSIZE 30
 
 optstruct *fpopts = init_optstruct();
+extern std::ofstream file;

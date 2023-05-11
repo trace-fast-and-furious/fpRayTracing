@@ -12,6 +12,16 @@ namespace custom_precision_fp
         return C;
     }
 
+    void write_to_file(fp_custom f)
+    {
+        file << f.val[0] << " ";
+    }
+
+    std::ostream &operator<<(std::ostream &out, const fp_custom f)
+    {
+        return out << f.val[0];
+    }
+
     fp_orig val(fp_custom a) { return a.val[0]; }
 
     /* frequently used values in custom precision*/
@@ -23,6 +33,7 @@ namespace custom_precision_fp
     {
         fp_custom res = {{}};
         cpf_add(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -31,6 +42,7 @@ namespace custom_precision_fp
         fp_custom a = fp_orig_to_custom(a_orig);
         fp_custom res = {{}};
         cpf_add(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -39,6 +51,7 @@ namespace custom_precision_fp
         fp_custom b = fp_orig_to_custom(b_orig);
         fp_custom res = {{}};
         cpf_add(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -46,6 +59,7 @@ namespace custom_precision_fp
     {
         fp_custom res = {{}};
         cpf_sub(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -54,6 +68,7 @@ namespace custom_precision_fp
         fp_custom a = fp_orig_to_custom(a_orig);
         fp_custom res = {{}};
         cpf_sub(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -62,6 +77,7 @@ namespace custom_precision_fp
         fp_custom b = fp_orig_to_custom(b_orig);
         fp_custom res = {{}};
         cpf_sub(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -69,6 +85,7 @@ namespace custom_precision_fp
     {
         fp_custom res = {{}};
         cpf_mul(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -77,6 +94,7 @@ namespace custom_precision_fp
         fp_custom a = fp_orig_to_custom(a_orig);
         fp_custom res = {{}};
         cpf_mul(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -85,6 +103,7 @@ namespace custom_precision_fp
         fp_custom b = fp_orig_to_custom(b_orig);
         fp_custom res = {{}};
         cpf_mul(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -92,6 +111,7 @@ namespace custom_precision_fp
     {
         fp_custom res = {{}};
         cpf_div(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -100,6 +120,7 @@ namespace custom_precision_fp
         fp_custom a = fp_orig_to_custom(a_orig);
         fp_custom res = {{}};
         cpf_div(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -108,6 +129,7 @@ namespace custom_precision_fp
         fp_custom b = fp_orig_to_custom(b_orig);
         fp_custom res = {{}};
         cpf_div(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -115,6 +137,7 @@ namespace custom_precision_fp
     {
         fp_custom res = {{}};
         cpf_fmin(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -123,6 +146,7 @@ namespace custom_precision_fp
         fp_custom a = fp_orig_to_custom(a_orig);
         fp_custom res = {{}};
         cpf_fmin(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -131,6 +155,7 @@ namespace custom_precision_fp
         fp_custom b = fp_orig_to_custom(b_orig);
         fp_custom res = {{}};
         cpf_fmin(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -138,6 +163,7 @@ namespace custom_precision_fp
     {
         fp_custom res = {{}};
         cpf_fmax(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -146,6 +172,7 @@ namespace custom_precision_fp
         fp_custom a = fp_orig_to_custom(a_orig);
         fp_custom res = {{}};
         cpf_fmax(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -154,6 +181,7 @@ namespace custom_precision_fp
         fp_custom b = fp_orig_to_custom(b_orig);
         fp_custom res = {{}};
         cpf_fmax(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -161,6 +189,7 @@ namespace custom_precision_fp
     {
         fp_custom res = {{}};
         cpf_sqrt(res.val, a.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -169,6 +198,7 @@ namespace custom_precision_fp
         fp_custom res = {{}};
         fp_custom b = fp_orig_to_custom(b_orig);
         cpf_pow(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -176,6 +206,7 @@ namespace custom_precision_fp
     {
         fp_custom res = {{}};
         cpf_pow(res.val, a.val, b.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -183,12 +214,14 @@ namespace custom_precision_fp
     {
         fp_custom res = {{}};
         cpf_fabs(res.val, a.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
     fp_custom neg(fp_custom a)
     {
         fp_custom res = {{-a.val[0]}};
+        //write_to_file(res);
         return res;
     }
 
@@ -196,6 +229,7 @@ namespace custom_precision_fp
     {
         fp_custom res = {{}};
         cpf_tan(res.val, a.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -203,6 +237,7 @@ namespace custom_precision_fp
     {
         fp_custom res = {{}};
         cpf_sin(res.val, a.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
@@ -210,6 +245,7 @@ namespace custom_precision_fp
     {
         fp_custom res = {{}};
         cpf_cos(res.val, a.val, 1, fpopts);
+        //write_to_file(res);
         return res;
     }
 
