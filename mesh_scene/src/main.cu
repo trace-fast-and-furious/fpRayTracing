@@ -23,8 +23,8 @@ void render(int image_height, int image_width, int samples_per_pixel, int depth,
 
 // Global variables
 unsigned char *out_image;
-const string MESHNAME = "stanford_bunny";
-const char IMG_TYPE = '1';  // 1: for SSIM graph, 2: for output image
+const string MESHNAME = "dragon";
+const char IMG_TYPE = '2';  // 1: for SSIM graph, 2: for output image, 3: camera test
 fp_orig t_epsilon = 0.001;
 
 int main(void)
@@ -66,17 +66,24 @@ int main(void)
     int image_width, image_height, samples_per_pixel, max_depth;
 
     if(IMG_TYPE == '1'){
-        image_width = 50;
+        image_width = 128;
         image_height = static_cast<int>(image_width / aspect_ratio);
-        samples_per_pixel = 10;    
+        samples_per_pixel = 1;    
         max_depth = 50;
     }
     else if(IMG_TYPE == '2')
     {
         image_width = 128;
         image_height = static_cast<int>(image_width / aspect_ratio);
-        samples_per_pixel = 10;    
+        samples_per_pixel = 100;    
         max_depth = 50;
+    }
+    else if(IMG_TYPE == '3')  // test
+    {
+        image_width = 10;
+        image_height = static_cast<int>(image_width / aspect_ratio);
+        samples_per_pixel = 1;    
+        max_depth = 3;
     }
 
     // Camera
@@ -94,16 +101,20 @@ int main(void)
         t_epsilon = 0.06;
     }
     else if(!(MESHNAME.compare("dragon"))) {
+        // lookfrom = Point3(0.24, 0.3, 0.5);
+        // lookat = Point3(-0.01,0.1,0);
+        // fov = 32;
+        // t_epsilon = 0.055;
         lookfrom = Point3(0.25, 0.3, 0.5);
         lookat = Point3(0.0,0.1,0);
         fov = 25;
-        t_epsilon = 0.05;
+        t_epsilon = 0.054;
     }
     else if(!(MESHNAME.compare("Armadillo"))) {
-        lookfrom = Point3(-50, -50, -50);
-        lookat = Point3(0,0,0);
-        fov = 1000;
-        t_epsilon = 0.01;
+        lookfrom = Point3(-80, 30, 80);
+        lookat = Point3(0,30,0);
+        fov = 120;
+        t_epsilon = 0.05;
     }
     else if(!(MESHNAME.compare("HappyBuddha"))) {
         lookfrom = Point3(0.3, 0.3, 0.5);
@@ -132,6 +143,7 @@ int main(void)
     cout << "Image Type: " << IMG_TYPE << ". ";
     if(IMG_TYPE == '1') cout << "SSIM" << endl;
     else if(IMG_TYPE == '2') cout << "SHOW" << endl;
+    else if(IMG_TYPE == '3') cout << "TEST" << endl;
 
     cout << MESHNAME << ".ppm: " << image_width << "x" << image_height << "_s" << samples_per_pixel << "_d" << max_depth << "_e" << t_epsilon << endl;
     cout << "  - Exponent: " << to_string(CP_EXP_BITSIZE) << ", Mantissa: " << to_string(CP_MANT_BITSIZE) << endl;
@@ -151,6 +163,11 @@ int main(void)
     }
     if(IMG_TYPE == '2') {
         directory1 = "../img2.SHOW/";
+        directory2 = directory1 + MESHNAME + "_E" + to_string(CP_EXP_BITSIZE) + "_M" + to_string(CP_MANT_BITSIZE) + "/";
+        directory3 = directory2 + to_string(image_width) + "x" + to_string(image_height) + "_s" + to_string(samples_per_pixel) + "_d" + to_string(max_depth) + "/";
+    }
+    if(IMG_TYPE == '3') {
+        directory1 = "../img3.TEST/";
         directory2 = directory1 + MESHNAME + "_E" + to_string(CP_EXP_BITSIZE) + "_M" + to_string(CP_MANT_BITSIZE) + "/";
         directory3 = directory2 + to_string(image_width) + "x" + to_string(image_height) + "_s" + to_string(samples_per_pixel) + "_d" + to_string(max_depth) + "/";
     }
@@ -211,7 +228,7 @@ void render(int image_height, int image_width, int samples_per_pixel, int depth,
     float r, g, b;
     for (int j = 0; j < image_height; ++j)
     {
-        cout << "[Rendering] h: " << j << endl; 
+        cout << "[" << MESHNAME << "] h: " << j << endl; 
         
         for (int i = 0; i < image_width; ++i)
         {
