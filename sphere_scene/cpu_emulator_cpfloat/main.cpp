@@ -205,8 +205,8 @@ color ray_color(const ray &r, const hittable &world, int depth)
 	if (depth <= 0)
 		return color(0, 0, 0);
 
-	if (world.hit(r, 0.01, std::numeric_limits<fp_orig>::infinity(), rec)) // hit: 충돌지점을 결정(child ray 의 origin)
-	{																	   // if ray hits object
+	if (world.hit(r, 0.001, std::numeric_limits<fp_orig>::infinity(), rec)) // hit: 충돌지점을 결정(child ray 의 origin)
+	{																		// if ray hits object
 		ray scattered;
 		color attenuation;
 		if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)) // scatter: child ray 방향성을 결정
@@ -235,7 +235,7 @@ int main()
 	// Allocate the data structure for target formats and rounding parameters.
 	fpopts = init_optstruct();
 
-	// Set up the parameters for binary16 target format.
+	// Set up the parameters for target format.
 	fpopts->precision = CP_MANT_BITSIZE + 1;	   // Bits in the significand + 1.
 	fpopts->emax = pow(CP_EXP_BITSIZE - 1, 2) - 1; // The maximum exponent value(=bias)
 	fpopts->subnormal = CPFLOAT_SUBN_USE;		   // Support for subnormals is on.
@@ -262,7 +262,7 @@ int main()
 	ckCpu->clockResume();
 	// Image
 	auto aspect_ratio = 16.0 / 9.0;
-	int image_width = 1920; // 400
+	int image_width = 400; // 400
 	int image_height = static_cast<int>(image_width / aspect_ratio);
 	int samples_per_pixel = 1000;
 	const int max_depth = 50;

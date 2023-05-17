@@ -308,7 +308,7 @@ typedef struct
  @return The function returns a pointer to the allocated memory if the
  execution was successful, and @b NULL otherwise.<p/>
  */
-__host__ __device__ optstruct *init_optstruct();
+__device__ optstruct *init_optstruct();
 
 /**
  @brief Free the memory underlying an @ref optstruct struct.
@@ -320,7 +320,7 @@ __host__ __device__ optstruct *init_optstruct();
  @return The function returns @p 0 if the unless @p fpopts is set to @p NULL,
  in which case it return @p -1.<p/>
  */
-__host__ __device__ int free_optstruct(optstruct *fpopts);
+__device__ int free_optstruct(optstruct *fpopts);
 
 #endif /* #ifndef _CHOPFAST_DEFINITIONS_ */
 

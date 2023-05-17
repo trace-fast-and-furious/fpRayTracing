@@ -52,7 +52,7 @@
 #define GEN_SINGLE_BIT(seed) (rand_r(seed) & (1U << 30))
 #ifdef _OPENMP
 #define PRNG_ADVANCE_BIT prng_advance_bit
-__host__ __device__ static inline BITTYPE PRNG_ADVANCE_BIT(BITSEEDTYPE *seed, size_t delta)
+__device__ static inline BITTYPE PRNG_ADVANCE_BIT(BITSEEDTYPE *seed, size_t delta)
 {
   for (size_t i = 0; i < delta; i++)
     rand_r(seed);
@@ -105,7 +105,7 @@ __host__ __device__ static inline BITTYPE PRNG_ADVANCE_BIT(BITSEEDTYPE *seed, si
 
 #include <cuda_runtime.h>
 
-__host__ __device__ optstruct *init_optstruct()
+__device__ optstruct *init_optstruct()
 {
   optstruct *fpopts = (optstruct *)malloc(sizeof(*fpopts));
   fpopts->bitseed = NULL;
@@ -114,7 +114,7 @@ __host__ __device__ optstruct *init_optstruct()
   return fpopts;
 }
 
-__host__ __device__ int free_optstruct(optstruct *fpopts)
+__device__ int free_optstruct(optstruct *fpopts)
 {
   if (fpopts == NULL)
     return -1;
@@ -131,7 +131,7 @@ __host__ __device__ int free_optstruct(optstruct *fpopts)
   }
 }
 
-__host__ __device__ int strcmp_c(const char *p1, const char *p2)
+__device__ int strcmp_c(const char *p1, const char *p2)
 {
   const unsigned char *s1 = (const unsigned char *)p1;
   const unsigned char *s2 = (const unsigned char *)p2;
@@ -148,7 +148,7 @@ __host__ __device__ int strcmp_c(const char *p1, const char *p2)
   return c1 - c2;
 }
 
-__host__ __device__ time_t time_c(time_t *t)
+__device__ time_t time_c(time_t *t)
 {
   /* Get the current system time in clock cycles */
   uint64_t current_time = clock64();
@@ -227,7 +227,7 @@ typedef struct
 #ifndef PCG_VARIANTS_H_INCLUDED
 #ifdef _OPENMP
 #define PRNG_ADVANCE_RAND ADDSUFFIXTO(prng_advance_rand)
-__host__ __device__ static inline INTTYPE PRNG_ADVANCE_RAND(RANDSEEDTYPE *seed, size_t delta)
+__device__ static inline INTTYPE PRNG_ADVANCE_RAND(RANDSEEDTYPE *seed, size_t delta)
 {
   for (size_t i = 0; i < delta; i++)
     rand_r((unsigned int *)seed);
@@ -276,7 +276,7 @@ __host__ __device__ static inline INTTYPE PRNG_ADVANCE_RAND(RANDSEEDTYPE *seed, 
 
 /* Function to validate floating-point options passed to CPFloat interfaces. */
 #define VALIDATE_INPUT ADDSUFFIXTO(CONCATENATE(cpfloat, _validate_optstruct))
-__host__ __device__ static inline int VALIDATE_INPUT(const optstruct *fpopts)
+__device__ static inline int VALIDATE_INPUT(const optstruct *fpopts)
 {
 
   int retval;
@@ -349,7 +349,7 @@ __host__ __device__ static inline int VALIDATE_INPUT(const optstruct *fpopts)
 
 /* Compute floating-point parameters required by the rounding functions. */
 #define COMPUTE_GLOBAL_PARAMS ADDSUFFIXTO(compute_golbal_params)
-__host__ __device__ static inline FPPARAMS COMPUTE_GLOBAL_PARAMS(const optstruct *fpopts,
+__device__ static inline FPPARAMS COMPUTE_GLOBAL_PARAMS(const optstruct *fpopts,
                                                         int *retval)
 {
 
@@ -389,7 +389,7 @@ __host__ __device__ static inline FPPARAMS COMPUTE_GLOBAL_PARAMS(const optstruct
 
 /* Compute floating point parameters required for rounding subnormals. */
 #define UPDATE_GLOBAL_BITMASKS ADDSUFFIXTO(update_global_bitmasks)
-__host__ __device__ static inline void UPDATE_GLOBAL_BITMASKS(FPPARAMS *params)
+__device__ static inline void UPDATE_GLOBAL_BITMASKS(FPPARAMS *params)
 {
 
   /* Bitmasks. */
@@ -399,7 +399,7 @@ __host__ __device__ static inline void UPDATE_GLOBAL_BITMASKS(FPPARAMS *params)
 
 /* Compute floating point parameters required for rounding subnormals. */
 #define UPDATE_LOCAL_PARAMS ADDSUFFIXTO(update_local_params)
-__host__ __device__ static inline void UPDATE_LOCAL_PARAMS(const FPTYPE *A,
+__device__ static inline void UPDATE_LOCAL_PARAMS(const FPTYPE *A,
                                                   const FPPARAMS *params,
                                                   LOCPARAMS *lparams)
 {
@@ -950,7 +950,7 @@ __host__ __device__ static inline void UPDATE_LOCAL_PARAMS(const FPTYPE *A,
                                         PARALLEL_SUFFIX,                                  \
                                         INIT_RAND_STRING,                                 \
                                         INIT_BIT_STRING)                                  \
-  __host__ __device__ static inline int                                                            \
+  __device__ static inline int                                                            \
   GENERATE_SUBFUN_NAME(FUNNAME, PARALLEL_SUFFIX)(DEPARENTHESIZE_MAYBE(FOUTPUT),           \
                                                  DEPARENTHESIZE_MAYBE(FINPUT),            \
                                                  const size_t numelem, optstruct *fpopts) \
@@ -1062,7 +1062,7 @@ __host__ __device__ static inline void UPDATE_LOCAL_PARAMS(const FPTYPE *A,
   GENERATE_INTERFACE_SUBFUNCTIONS_PAR(FUNNAME, FOUTPUT, FINPUT, X, Y,                           \
                                       INIT_STRING, FINAL_STRING,                                \
                                       PREPROC, POSTPROC)                                        \
-  __host__ __device__ static inline int                                                                  \
+  __device__ static inline int                                                                  \
   GENERATE_FUN_NAME(FUNNAME)(DEPARENTHESIZE_MAYBE(FOUTPUT),                                     \
                              DEPARENTHESIZE_MAYBE(FINPUT),                                      \
                              const size_t numelem,                                              \
@@ -1085,7 +1085,7 @@ __host__ __device__ static inline void UPDATE_LOCAL_PARAMS(const FPTYPE *A,
   GENERATE_INTERFACE_SUBFUNCTIONS_SEQ(FUNNAME, FOUTPUT, FINPUT, X, Y,                         \
                                       INIT_STRING, FINAL_STRING,                              \
                                       PREPROC, POSTPROC)                                      \
-  __host__ __device__ static inline int                                                                \
+  __device__ static inline int                                                                \
   GENERATE_FUN_NAME(FUNNAME)(DEPARENTHESIZE_MAYBE(FOUTPUT),                                   \
                              DEPARENTHESIZE_MAYBE(FINPUT),                                    \
                              const size_t numelem,                                            \
@@ -1163,7 +1163,7 @@ __host__ __device__ static inline void UPDATE_LOCAL_PARAMS(const FPTYPE *A,
                                         TYPETO,                                                \
                                         PARALLEL_TYPE,                                         \
                                         PARALLEL_SUFFIX)                                       \
-  __host__ __device__ static inline int                                                                 \
+  __device__ static inline int                                                                 \
   GENERATE_SUBFUN_NAME(FUNNAME, PARALLEL_SUFFIX)(FPTYPE * X, const FPTYPE *A, const TYPETO *B, \
                                                  const size_t numelem, optstruct *fpopts)      \
   {                                                                                            \
@@ -1194,7 +1194,7 @@ __host__ __device__ static inline void UPDATE_LOCAL_PARAMS(const FPTYPE *A,
 #define GENERATE_NEXTAFTER_INTERFACE(FUNNAME, TYPETO)                                      \
   GENERATE_NEXTAFTER_SUBFUNCTIONS(FUNNAME, TYPETO, SEQ, PARALLEL_SUFFIX_SEQ)               \
   GENERATE_NEXTAFTER_SUBFUNCTIONS(FUNNAME, TYPETO, PAR, PARALLEL_SUFFIX_PAR)               \
-  __host__ __device__ static inline int                                                             \
+  __device__ static inline int                                                             \
   GENERATE_FUN_NAME(FUNNAME)(FPTYPE * X, const FPTYPE *A, const TYPETO *B,                 \
                              const size_t numelem, optstruct *fpopts)                      \
   {                                                                                        \
@@ -1206,7 +1206,7 @@ __host__ __device__ static inline void UPDATE_LOCAL_PARAMS(const FPTYPE *A,
 #else /* #ifdef _OPENMP */
 #define GENERATE_NEXTAFTER_INTERFACE(FUNNAME, TYPETO)                                    \
   GENERATE_NEXTAFTER_SUBFUNCTIONS(FUNNAME, TYPETO, SEQ, PARALLEL_SUFFIX_SEQ)             \
-  __host__ __device__ static inline int                                                           \
+  __device__ static inline int                                                           \
   GENERATE_FUN_NAME(FUNNAME)(FPTYPE * X, const FPTYPE *A, const TYPETO *B,               \
                              const size_t numelem, optstruct *fpopts)                    \
   {                                                                                      \
@@ -1225,7 +1225,7 @@ GENERATE_INTERFACE(fpround,
                    X + i, A + i,
                    X, A,
                    NOOP, INTRODUCE_BITFLIP, NOOP, NOOP)
-__host__ __device__ static inline int ADDSUFFIXTO(cpfloat)(FPTYPE *X,
+__device__ static inline int ADDSUFFIXTO(cpfloat)(FPTYPE *X,
                                                   const FPTYPE *A,
                                                   const size_t numelem,
                                                   optstruct *fpopts)
@@ -1240,14 +1240,14 @@ __host__ __device__ static inline int ADDSUFFIXTO(cpfloat)(FPTYPE *X,
  * They are not documented and should not be used directly.
  */
 #ifdef _OPENMP
-__host__ __device__ static inline int CONCATENATE(ADDSUFFIXTO(cpfloat), _sequential)(FPTYPE *X,
+__device__ static inline int CONCATENATE(ADDSUFFIXTO(cpfloat), _sequential)(FPTYPE *X,
                                                                             const FPTYPE *A,
                                                                             const size_t numelem,
                                                                             optstruct *fpopts)
 {
   return GENERATE_SUBFUN_NAME(fpround, PARALLEL_SUFFIX_SEQ)(X, A, numelem, fpopts);
 }
-__host__ __device__ static inline int CONCATENATE(ADDSUFFIXTO(cpfloat), _parallel)(FPTYPE *X,
+__device__ static inline int CONCATENATE(ADDSUFFIXTO(cpfloat), _parallel)(FPTYPE *X,
                                                                           const FPTYPE *A,
                                                                           const size_t numelem,
                                                                           optstruct *fpopts)

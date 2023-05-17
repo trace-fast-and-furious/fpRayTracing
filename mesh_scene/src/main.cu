@@ -23,7 +23,7 @@ void render(int image_height, int image_width, int samples_per_pixel, int depth,
 
 // Global variables
 unsigned char *out_image;
-const string MESHNAME = "dragon";
+const string MESHNAME = "Armadillo";
 const char IMG_TYPE = '2';  // 1: for SSIM graph, 2: for output image, 3: camera test
 fp_orig t_epsilon = 0.001;
 
@@ -73,7 +73,7 @@ int main(void)
     }
     else if(IMG_TYPE == '2')
     {
-        image_width = 128;
+        image_width = 64;
         image_height = static_cast<int>(image_width / aspect_ratio);
         samples_per_pixel = 100;    
         max_depth = 50;
