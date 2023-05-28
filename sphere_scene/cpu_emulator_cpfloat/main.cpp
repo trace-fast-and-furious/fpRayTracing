@@ -25,7 +25,7 @@ unsigned char *image_array;
 hittable_list random_scene()
 {
 	hittable_list world;
-	auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
+	auto ground_material = make_shared<lambertian>(color(0.45, 0.45, 0));
 	world.add(make_shared<sphere>(0, point3(0, -1000, 0), 1000, ground_material));
 
 	color albedo;
@@ -39,7 +39,7 @@ hittable_list random_scene()
 		point3(-2.78140190653503, 0.1606968875974417, -0.9853294855449348),
 		point3(-1.922549736965448, 0.1949327074922622, -2.526604185020552),
 		point3(-1.12642928189598, 0.1063095838297159, -1.785548041341826),
-		point3(-1.681356188375503, 0.173853431455791, 0.5759809346403928),
+		point3(-1, 0.173853431455791, -1),
 		point3(-1.381997082801536, 0.1893372414167971, 1.31532416054979),
 		point3(-1.180125172669068, 0.1814766895957292, 2.615796672459692),
 		point3(-0.6251488476525993, 0.1276234671939165, -1.499200620455667),
@@ -53,23 +53,23 @@ hittable_list random_scene()
 		point3(2.533890309324488, 0.1436496996786445, 0.8627732652705165),
 	};
 	std::vector<color> diffuse_albedo = {
-		point3(0.6830314573462266, 0.3263749794526803, 0.3342137345449562),
-		point3(0.01704806398834827, 0.1043744601251757, 0.05502223137467545),
-		point3(0.01782517088517414, 0.04256014784906614, 0.06706205286194247),
-		point3(0.2027322988066001, 0.3192710400325286, 0.4869761366929174),
-		point3(0.1453828662755727, 0.1376259600501417, 0.6053697749897671),
-		point3(0.6073290740876693, 0.2587426093190471, 0.8212966445126793),
-		point3(0.8372314175609892, 0.03186871659593889, 0.44395328493061352),
-		point3(0.07845913301730878, 0.4492706281708823, 0.02138327088419156),
-		point3(0.01261029934147599, 0.1674184548957992, 0.03887201466009417),
-		point3(0.07216960363282493, 0.1092253098764766, 0.04810884630989146),
-		point3(0.5044335639256461, 0.1406541476592986, 0.1337180990863897),
-		point3(0.1994614315043523, 0.1737846613212816, 0.1488718963990324),
-		point3(0.2788891211304559, 0.1823443391003391, 0.2172745360030026),
-		point3(0.2059902390018757, 0.1127207911119694, 0.4024150815689432),
-		point3(0.5070200622254459, 0.3024047342823641, 0.1477628080849459),
-		point3(0.1472025960612832, 0.09519330598233622, 0.1922211974773546),
-		point3(0.09379793918068721, 0.2683274674583273, 0.5245379621937447),
+		point3(0.996, 0.43, 0),
+		point3(0, 0.289, 0.176),
+		point3(0.296, 0.359, 0.769),
+		point3(0, 0.63, 0.87),
+		point3(1, 0.85, 0),
+		point3(0, 0.4375, 0.469),
+		point3(0, 0.176, 0.453),
+		point3(0.95, 0.76, 0),
+		point3(0, 0.62, 0.418),
+		point3(1, 1, 1),
+		point3(0.9, 0.3, 0),
+		point3(0, 0, 0.996),
+		point3(0.465, 0.465, 0.473),
+		point3(0, 0.289, 0.176),
+		point3(0.48, 0.1, 0.6),
+		point3(0.98, 0.668, 0.09),
+		point3(0.258, 0.258, 0.242),
 	};
 	std::vector<fp_orig> diffuse_radius = {
 		0.1553969955537468,
@@ -87,7 +87,6 @@ hittable_list random_scene()
 		0.1231427952181548,
 		0.1003231459762901,
 		0.1184622467495501,
-		0.136160090751946,
 		0.1436496996786445};
 
 	// metal
@@ -96,7 +95,7 @@ hittable_list random_scene()
 		point3(-2.528141529159621, 0.1296031617559493, 1.573797040665522),
 		point3(-2.197623493568972, 0.1769913835916668, 2.360205759713426),
 		point3(-1.96464769099839, 0.1667723760474473, -0.5215542094781995),
-		point3(-0.7470465289428829, 0.1431953418068588, -2.442363164713607),
+		point3(-0.7470465289428829, 0.3, -4),
 		point3(-0.7909646153450012, 0.1368663541506976, 0.2647443256806583),
 		point3(-0.1293353757355362, 0.173265441134572, 2.590907287411392),
 		point3(0.1841895775403828, 0.107823214167729, -2.937084242049605),
@@ -113,7 +112,7 @@ hittable_list random_scene()
 		0.1296031617559493,
 		0.1769913835916668,
 		0.1667723760474473,
-		0.1431953418068588,
+		0.3,
 		0.1368663541506976,
 		0.173265441134572,
 		0.107823214167729,
@@ -186,13 +185,14 @@ hittable_list random_scene()
 	}
 
 	auto material1 = make_shared<dielectric>(1.5);
-	world.add(make_shared<sphere>(0, point3(0, 0.7, 0), 0.7, material1));
+	world.add(make_shared<sphere>(0, point3(4, 0.7, 0), 0.7, material1));
 
-	auto material2 = make_shared<lambertian>(color(0.4, 0.2, 0.1));
-	world.add(make_shared<sphere>(0, point3(-4, 0.7, 0), 0.7, material2));
+	// auto material2 = make_shared<lambertian>(color(0.765, 0.008, 0.2));
+	auto material2 = make_shared<lambertian>(color(0.765, 0.008, 0.2));
+	world.add(make_shared<sphere>(0, point3(-8, 0.7, -3), 0.7, material2));
 
-	auto material3 = make_shared<metal>(color(0.7, 0.6, 0.5), 0.0);
-	world.add(make_shared<sphere>(0, point3(4, 0.7, 0), 0.7, material3));
+	auto material3 = make_shared<metal>(color(0.85, 0.85, 0.85), 0.0);
+	world.add(make_shared<sphere>(0, point3(-5, 0.7, 0), 0.7, material3));
 
 	return world;
 }
@@ -205,8 +205,8 @@ color ray_color(const ray &r, const hittable &world, int depth)
 	if (depth <= 0)
 		return color(0, 0, 0);
 
-	if (world.hit(r, 0.01, std::numeric_limits<fp_orig>::infinity(), rec)) // hit: 충돌지점을 결정(child ray 의 origin)
-	{																	   // if ray hits object
+	if (world.hit(r, 0.001, std::numeric_limits<fp_orig>::infinity(), rec)) // hit: 충돌지점을 결정(child ray 의 origin)
+	{																		// if ray hits object
 		ray scattered;
 		color attenuation;
 		if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)) // scatter: child ray 방향성을 결정
@@ -235,7 +235,7 @@ int main()
 	// Allocate the data structure for target formats and rounding parameters.
 	fpopts = init_optstruct();
 
-	// Set up the parameters for binary16 target format.
+	// Set up the parameters for target format.
 	fpopts->precision = CP_MANT_BITSIZE + 1;	   // Bits in the significand + 1.
 	fpopts->emax = pow(CP_EXP_BITSIZE - 1, 2) - 1; // The maximum exponent value(=bias)
 	fpopts->subnormal = CPFLOAT_SUBN_USE;		   // Support for subnormals is on.
@@ -267,6 +267,7 @@ int main()
 	int samples_per_pixel = 1000;
 	const int max_depth = 50;
 	float scale = 1.0 / samples_per_pixel;
+	cout << "image width: " << image_width << ", sample #: " << samples_per_pixel << endl;
 
 	// World
 	ckWolrdBVH->clockResume();
@@ -285,7 +286,7 @@ int main()
 
 	// Camera
 	point3 lookfrom(13, 2, 3);
-	point3 lookat(0, 0, 0);
+	point3 lookat(0, 0.3, 0);
 	vec3 vup(0, 1, 0);
 	fp_orig dist_to_focus = 10;
 	fp_orig aperture = 0.1;
@@ -371,14 +372,14 @@ int main()
 	// creating directory
 	string cp_size = to_string(CP_EXP_BITSIZE) + "_" + to_string(CP_MANT_BITSIZE);
 	// string directory = "../images/emulator_cpfloat/test/" + string(typeid(fp_orig).name());
-	string directory = "../images/emulator_cpfloat/1000_50_36spheres/" + string(typeid(fp_orig).name());
+	string directory = "../images/emulator_cpfloat/36_spheres/1920_1000_50/";
 	if (DATE)
 		directory += "_" + to_string(timeStamp);
 	if (mkdir(directory.c_str(), 0777) == -1)
 		std::cerr
 			<< "Error :  " << strerror(errno) << endl;
 
-	string img_path = directory + "_" + cp_size + "_" + to_string(image_width) + "_" + to_string(samples_per_pixel) + "_" + to_string(max_depth) + "_img.ppm";
+	string img_path = directory + string(typeid(fp_orig).name()) + "_" + cp_size + "_" + to_string(image_width) + "_" + to_string(samples_per_pixel) + "_" + to_string(max_depth) + "_img.ppm";
 	ppmSave(img_path.c_str(), image_array, image_width, image_height);
 
 	return 0;

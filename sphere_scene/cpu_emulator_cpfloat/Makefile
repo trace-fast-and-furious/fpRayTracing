@@ -2,8 +2,8 @@ CC=nvcc
 
 
 main.out: mkClockMeasure.h mkCuda.h main.cpp
-	$(CC) -o ./makefiles/main_6_10.out main.cpp
-	$ ./makefiles/main_6_10.out
+	$(CC) -o ./makefiles/sphere_6_20_400_low_epsilon.out main.cpp
+	$ ./makefiles/sphere_6_20_400_low_epsilon.out
 
 clean:
-	rm -rf ./main_6_10.out
+	rm -rf./makefiles/sphere_6_20_400_low_epsilon.out

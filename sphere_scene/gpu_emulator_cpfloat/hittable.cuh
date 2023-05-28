@@ -21,8 +21,8 @@ struct hit_record
 class hittable
 {
 public:
-    __device__ __host__ virtual bool hit(const ray &r, fp_custom t_min, fp_custom t_max, hit_record &rec) const = 0;
-    __device__ __host__ virtual bool hit(const ray &r, fp_orig __t_min, fp_orig __t_max, hit_record &rec) const = 0;
+    __device__ virtual bool hit(const ray &r, fp_custom t_min, fp_custom t_max, hit_record &rec) const = 0;
+    __device__ virtual bool hit(const ray &r, fp_orig __t_min, fp_orig __t_max, hit_record &rec) const = 0;
 };
 
 #endif

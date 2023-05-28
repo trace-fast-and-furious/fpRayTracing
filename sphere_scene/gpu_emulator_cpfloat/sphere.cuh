@@ -8,17 +8,17 @@ using namespace custom_precision_fp;
 class sphere : public hittable
 {
 public:
-    __device__ __host__ sphere() {}
-    __device__ __host__ sphere(vec3 cen, float r, material *m) : center(cen), radius(fp_orig_to_custom(r)), mat_ptr(m){};
-    __device__ __host__ virtual bool hit(const ray &r, fp_orig __t_min, fp_orig __t_max, hit_record &rec) const override;
-    __device__ __host__ virtual bool hit(const ray &r, fp_custom t_min, fp_custom t_max, hit_record &rec) const override;
+    __device__ sphere() {}
+    __device__ sphere(vec3 cen, float r, material *m) : center(cen), radius(fp_orig_to_custom(r)), mat_ptr(m){};
+    __device__ virtual bool hit(const ray &r, fp_orig __t_min, fp_orig __t_max, hit_record &rec) const override;
+    __device__ virtual bool hit(const ray &r, fp_custom t_min, fp_custom t_max, hit_record &rec) const override;
 
     vec3 center;
     fp_custom radius;
     material *mat_ptr;
 };
 
-bool sphere::hit(const ray &r, fp_orig __t_min, fp_orig __t_max, hit_record &rec) const
+__device__ bool sphere::hit(const ray &r, fp_orig __t_min, fp_orig __t_max, hit_record &rec) const
 {
     /* before: fp_custom */
     vec3 oc = r.origin() - center;
@@ -52,7 +52,7 @@ bool sphere::hit(const ray &r, fp_orig __t_min, fp_orig __t_max, hit_record &rec
     return false;
 }
 
-bool sphere::hit(const ray &r, fp_custom t_min, fp_custom t_max, hit_record &rec) const
+__device__ bool sphere::hit(const ray &r, fp_custom t_min, fp_custom t_max, hit_record &rec) const
 {
     /* before: fp_custom */
     vec3 oc = r.origin() - center;

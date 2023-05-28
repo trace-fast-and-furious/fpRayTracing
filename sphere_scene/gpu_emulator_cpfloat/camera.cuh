@@ -6,7 +6,7 @@
 
 using namespace custom_precision_fp;
 
-__device__ __host__ vec3 random_in_unit_disk(curandState *local_rand_state)
+__device__ vec3 random_in_unit_disk(curandState *local_rand_state)
 {
     vec3 p;
     do
@@ -19,7 +19,7 @@ __device__ __host__ vec3 random_in_unit_disk(curandState *local_rand_state)
 class camera
 {
 public:
-    __device__ __host__ camera(point3 lookfrom,
+    __device__ camera(point3 lookfrom,
                       point3 lookat,
                       vec3 vup,
                       fp_orig __vfov, // vertical field-of-view in degrees
@@ -48,7 +48,7 @@ public:
         lens_radius = aperture / 2;
     }
 
-    __device__ __host__ ray get_ray(fp_orig __s, fp_orig __t, curandState *local_rand_state)
+    __device__ ray get_ray(fp_orig __s, fp_orig __t, curandState *local_rand_state)
     {
         fp_custom s = fp_orig_to_custom(__s);
         fp_custom t = fp_orig_to_custom(__t);
