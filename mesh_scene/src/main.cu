@@ -73,9 +73,9 @@ int main(void)
     }
     else if(IMG_TYPE == '2')
     {
-        image_width = 128;
+        image_width = 1;
         image_height = static_cast<int>(image_width / aspect_ratio);
-        samples_per_pixel = 100;    
+        samples_per_pixel = 10;    
         max_depth = 50;
     }
     else if(IMG_TYPE == '3')  // test
