@@ -23,10 +23,7 @@ Floating-point(FP) 연산을 사용하는 기존의 레이 트레이서 코드�
 > * 드라이버 버전: NVIDIA Driver 510.47.03
 > * 사용 언어: CUDA 11.6
 > * 사용 컴파일러: NVIDIA's CUDA Compiler (NVCC)
->> 1. 컴파일: `$ make`(Makefile을 이용하는 경우) 또는 `nvcc -g -G --expt-relaxed-constexpr -o RTTNW.out main.cu` 명령어 입력
->> 2. 실행: `$ ./RTTNW.out` 명령어 입력
->> * 디버깅: `$ cuda-gdb ./RTTNW.out` 명령어 입력
-
+>> 컴파일 & execute: `$ make`(Makefile을 이용하는 경우) 명령어 입력
 ***
 # fpRayTracing 코드 설명
 레이 트레이서는 아래와 같이 크게 3가지 단계로 구현된다.
